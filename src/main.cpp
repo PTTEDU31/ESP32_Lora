@@ -1,18 +1,15 @@
 #include "Arduino.h"
-#include <ESP_I2S.h>
-
-const int buff_size = 128;
-int available_bytes, read_bytes;
-uint8_t buffer[buff_size];
-I2SClass I2S;
+#include "HAL/i2s.h"
 
 void setup() {
-  I2S.setPins(5, 25, 26, 35, 0); //SCK, WS, SDOUT, SDIN, MCLK
-  I2S.begin(I2S_MODE_STD, 16000, I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO);
-  I2S.read();
-  available_bytes = I2S.available();
-  I2S.write(buffer, read_bytes);
-  I2S.end();
+    Serial.begin(115200);
+    i2s_init();
+    ESP_LOGD("ESP32", "This is a debug log");
+
+    // In thông báo thông tin
+    ESP_LOGI("ESP32", "This is an info log");
 }
 
-void loop() {}
+void loop() {
+    // Không cần loop vì quá trình truyền được thực hiện liên tục
+}

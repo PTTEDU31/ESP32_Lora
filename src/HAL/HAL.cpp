@@ -1,5 +1,5 @@
 #include "HAL.h"
 
-void init_hal(){
+void EX_HAL(){
     
 }
