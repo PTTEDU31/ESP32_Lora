@@ -12,4 +12,6 @@ void setup() {
 
 void loop() {
     // Không cần loop vì quá trình truyền được thực hiện liên tục
+    load_buf();
+    vTaskDelay(1000);
 }

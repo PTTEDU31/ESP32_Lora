@@ -1,3 +1,4 @@
+#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
 #include "i2s.h"
 #include <stdlib.h>
 #include "freertos/FreeRTOS.h"
@@ -24,7 +25,11 @@ static IRAM_ATTR bool i2s_tx_queue_overflow_callback(i2s_chan_handle_t handle, i
      ESP_LOGW(TAG, "OVERFLOW Detected");
     return false; // Không yêu cầu xử lý thêm sau khi callback được gọi
 }
-
+static IRAM_ATTR bool i2s_tx_sent_callback(i2s_chan_handle_t handle, i2s_event_data_t *event, void *user_ctx)
+{
+     ESP_LOGW(TAG, "sent done Detected");
+    return false; // Không yêu cầu xử lý thêm sau khi callback được gọi
+}
 void i2s_gpio() 
 {
 	if (_cfg.pin_clk == GPIO_NUM_NC)
@@ -45,12 +50,13 @@ void i2s_gpio()
     .id = i2s_num, \
     .role = i2s_role, \
     .dma_desc_num = 8, \
-    .dma_frame_num = 240, \
+    .dma_frame_num = 254, \
     .auto_clear = true, \
 }
 
 void i2s_init(void)
 {
+	
 	i2s_gpio();
 	i2s_chan_config_t tx_chan_cfg = I2S_CHANNEL_CONFIG(I2S_NUM_AUTO, I2S_ROLE_MASTER);
 	ESP_ERROR_CHECK(i2s_new_channel(&tx_chan_cfg, &tx_chan, NULL));
@@ -76,7 +82,7 @@ void i2s_init(void)
 	i2s_event_callbacks_t cbs = {
         .on_recv = NULL,
         .on_recv_q_ovf = NULL,
-        .on_sent = i2s_tx_queue_overflow_callback,
+        .on_sent = i2s_tx_sent_callback,
         .on_send_q_ovf = i2s_tx_queue_overflow_callback,
 	};
 	ESP_ERROR_CHECK(i2s_channel_register_event_callback(tx_chan, &cbs, NULL));
@@ -84,8 +90,9 @@ void i2s_init(void)
 	send_595();
 }
 
+static uint8_t *w_buf = (uint8_t *)calloc(1, 1029);
+static size_t w_bytes = 1029;
 void send_595(){
-	uint8_t *w_buf = (uint8_t *)calloc(1, 1029);
     assert(w_buf); // Check if w_buf allocation success
 
     for (int i = 0; i < 1029; i += 8) {
@@ -98,19 +105,17 @@ void send_595(){
         w_buf[i + 6] = 0xDE;
         w_buf[i + 7] = 0xF0;
     }
-
-    size_t w_bytes = 1029;
+	
+    
     ESP_ERROR_CHECK(i2s_channel_enable(tx_chan));
 	
-	ESP_LOGW(TAG, "Writing data...");
-	ESP_LOGD("Tung","LOGD");
+	ESP_LOGE(TAG, "Writing data...");
 
-	for (int i = 0; i < 1; i++) {
-		ESP_ERROR_CHECK(i2s_channel_write(tx_chan, w_buf, 1029, &w_bytes, 1000));
-	}
-
-	// Thêm một độ trễ nhỏ để đảm bảo log được in ra
-	vTaskDelay(pdMS_TO_TICKS(1000));
 
 	// free(w_buf); // Giải phóng bộ nhớ sau khi sử dụng
+}
+
+void load_buf(){
+	ESP_ERROR_CHECK(i2s_channel_write(tx_chan, w_buf, 1029, &w_bytes, 100));
+	vTaskDelay(pdMS_TO_TICKS(5000));
 }
