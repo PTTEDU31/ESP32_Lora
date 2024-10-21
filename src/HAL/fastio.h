@@ -3,6 +3,7 @@
 
 #include "i2s.h"
 
+#include "../core/macro.h"
 #define IS_I2S_EXPANDER_PIN(IO) TEST(IO, 7)
 #define I2S_EXPANDER_PIN_INDEX(IO) (IO & 0x7F)
 
@@ -16,9 +17,10 @@
 #define _PULLUP(IO, v) pinMode(IO, v ? INPUT_PULLUP : INPUT)
 
 
-#define READ(IO) (IS_I2S_EXPANDER_PIN(IO) ? i2s_state(I2S_EXPANDER_PIN_INDEX(IO)) : digitalRead(IO))
-#define WRITE(IO, v) (IS_I2S_EXPANDER_PIN(IO) ? i2s_write(I2S_EXPANDER_PIN_INDEX(IO), v) : digitalWrite(IO, v))
-
+// #define READ(IO) (IS_I2S_EXPANDER_PIN(IO) ? i2s_state(I2S_EXPANDER_PIN_INDEX(IO)) : digitalRead(IO))
+// #define WRITE(IO, v) (IS_I2S_EXPANDER_PIN(IO) ? i2s_write(I2S_EXPANDER_PIN_INDEX(IO), v) : digitalWrite(IO, v))
+#define READ(IO) (digitalRead(IO))
+#define WRITE(IO, v) (digitalWrite(IO, v))
 // Set pin as input wrapper (0x80 | (v << 5) | (IO - 100))
 #define SET_INPUT(IO) _SET_INPUT(IO)
 

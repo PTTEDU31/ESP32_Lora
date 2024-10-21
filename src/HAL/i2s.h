@@ -1,11 +1,8 @@
 #pragma once
 
 #include "stdint.h"
-#include "driver/gpio.h" // Thêm thư viện này để định nghĩa gpio_num_t
-#include "../pins/pin_esp32.h"
 
-
-
+#define DMA_BUFFER_LEN 1024
 
 void i2s_gpio();
 void i2s_init(void);

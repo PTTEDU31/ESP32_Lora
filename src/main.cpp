@@ -1,6 +1,5 @@
 #include "Arduino.h"
 #include "HAL/i2s.h"
-
 void setup() {
     Serial.begin(115200);
     i2s_init();
@@ -11,7 +10,5 @@ void setup() {
 }
 
 void loop() {
-    // Không cần loop vì quá trình truyền được thực hiện liên tục
     load_buf();
-    vTaskDelay(1000);
 }
