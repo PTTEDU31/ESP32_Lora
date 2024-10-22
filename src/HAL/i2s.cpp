@@ -10,7 +10,7 @@
 #include"include.h"
 static i2s_chan_handle_t tx_chan; // I2S tx channel handler
 static const char* TAG = "I2S";   // Thẻ (tag) cho log
-
+uint32_t i2s_port_data = 0;
 // Constructor config struct
 typedef struct config {
   gpio_num_t pin_clk = GPIO_NUM_NC;  // Chân cho CLK (BCK)
@@ -87,38 +87,29 @@ void i2s_init(void)
 	};
 	ESP_ERROR_CHECK(i2s_channel_register_event_callback(tx_chan, &cbs, NULL));
 
-	send_595();
+	ESP_ERROR_CHECK(i2s_channel_enable(tx_chan));
+	
+	ESP_LOGE(TAG, "Writing data...");
 }
 
 static uint8_t *w_buf = (uint8_t *)calloc(1, DMA_BUFFER_LEN);
 static size_t w_bytes = DMA_BUFFER_LEN;
-void send_595(){
-    assert(w_buf); // Check if w_buf allocation success
-
-    for (int i = 0; i < DMA_BUFFER_LEN; i += 8) {
-        w_buf[i]     = 0x12;
-        w_buf[i + 1] = 0x34;
-        w_buf[i + 2] = 0x56;
-        w_buf[i + 3] = 0x78;
-        w_buf[i + 4] = 0x9A;
-        w_buf[i + 5] = 0xBC;
-        w_buf[i + 6] = 0xDE;
-        w_buf[i + 7] = 0xF0;
-    }
-	
-    
-    ESP_ERROR_CHECK(i2s_channel_enable(tx_chan));
-	
-	ESP_LOGE(TAG, "Writing data...");
-
-
-	// free(w_buf); // Giải phóng bộ nhớ sau khi sử dụng
-}
-
 void i2s_push_sample(){
 	for(uint8_t p = 0; p < MAX_EX_PIN;p++){
-		if(hal.pwm_pin_data[p].pwm_duty_ticks > 0);
-	}
+		if(hal.pwm_pin_data[p].pwm_duty_ticks > 0){
+		if (TEST32(i2s_port_data, p)) {  // hi->lo
+          CBI32(i2s_port_data, p);
+          hal.pwm_pin_data[p].pwm_tick_count = hal.pwm_pin_data[p].pwm_cycle_ticks - hal.pwm_pin_data[p].pwm_duty_ticks;
+        }
+		        else { // lo->hi
+          SBI32(i2s_port_data, p);
+          hal.pwm_pin_data[p].pwm_tick_count = hal.pwm_pin_data[p].pwm_duty_ticks;
+        }
+		}
+		else
+        hal.pwm_pin_data[p].pwm_tick_count--;
+    }
+	w_buf = i2s_port_data;
 }
 void load_buf(){
 	i2s_channel_write(tx_chan, w_buf, DMA_BUFFER_LEN, &w_bytes, 1000);

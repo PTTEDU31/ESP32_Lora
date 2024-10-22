@@ -2,8 +2,6 @@
 #pragma once
 
 #include "i2s.h"
-
-#include "../core/macro.h"
 #define IS_I2S_EXPANDER_PIN(IO) TEST(IO, 7)
 #define I2S_EXPANDER_PIN_INDEX(IO) (IO & 0x7F)
 
@@ -67,10 +65,3 @@
 // Ports and functions
 //
 
-// UART
-#define RXD 3
-#define TXD 1
-
-// TWI (I2C)
-#define SCL 5
-#define SDA 4
