@@ -2,14 +2,11 @@
 #include "HAL/HAL.h"
 void setup() {
     Serial.begin(115200);
-    i2s_init();
-    ESP_LOGD("ESP32", "This is a debug log");
-
-    // In thông báo thông tin
-    ESP_LOGI("ESP32", "This is an info log");
-    _SET_PWM_OUTPUT(23);
+    hal.init_hal();
+    hal.set_pwm_duty(129,200);
+    hal.set_pwm(128,128,50);
 }
 
 void loop() {
-    load_buf();
+
 }

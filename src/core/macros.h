@@ -9,6 +9,13 @@
 #define TBI32(N,B) (N ^= _BV32(B))
 #define GPIO_CFG_NUN(a)     ((gpio_num_t)a)
 
+#define SET_BIT_TO(N,B,TF) do{ if (TF) SBI(N,B); else CBI(N,B); }while(0)
+#ifndef SBI
+  #define SBI(A,B) (A |= _BV(B))
+#endif
+#ifndef CBI
+  #define CBI(A,B) (A &= ~_BV(B))
+#endif
 #define TEST(n,b) (!!((n)&_BV(b)))
 // Value helper macros
 #define WITHIN(N,L,H)       ((N) >= (L) && (N) <= (H))

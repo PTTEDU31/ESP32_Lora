@@ -1,2 +1,2 @@
 #pragma once
-#define MAX_EX_PIN 16
+#define MAX_EX_PIN 24
