@@ -100,6 +100,16 @@ typedef enum {
     HARDWARE_screen_reversed,
     HARDWARE_screen_bl,
 
+    //W5500
+    HARDWARE_use_W5500,
+    HARDWARE_rs_W5500,
+    HARDWARE_intr_W5500,
+    HARDWARE_mac_W5500,
+    HARDWARE_ip_W5500,
+    HARDWARE_gateway_W5500,
+    HARDWARE_subnet_W5500,
+
+
     // Backpack
     HARDWARE_use_backpack,
     HARDWARE_debug_backpack_baud,
@@ -121,10 +131,23 @@ typedef enum {
     HARDWARE_misc_fan_speeds_count,
     HARDWARE_gsensor_stk8xxx,
     HARDWARE_thermal_lm75a,
+    HARDWARE_misc_bmi280,
+    HARDWARE_misc_ina226,
+    
 
     // PWM
     HARDWARE_pwm_outputs,
     HARDWARE_pwm_outputs_count,
+    // PWM Outputs
+    HARDWARE_pwm_out1,           // PWM đầu ra 1
+    HARDWARE_pwm_out2,           // PWM đầu ra 2
+    HARDWARE_pwm_out3,           // PWM đầu ra 3
+    HARDWARE_pwm_out4,           // PWM đầu ra 4
+    HARDWARE_pwm_out5,           // PWM đầu ra 5
+    HARDWARE_pwm_out6,           // PWM đầu ra 6
+    HARDWARE_pwm_out7,           // PWM đầu ra 7
+    HARDWARE_pwm_out8,           // PWM đầu ra 8
+
 
     // VBAT
     HARDWARE_vbat,
@@ -132,22 +155,36 @@ typedef enum {
     HARDWARE_vbat_scale,
     HARDWARE_vbat_atten,
 
-    // VTX
-    HARDWARE_vtx_amp_pwm,
-    HARDWARE_vtx_amp_vpd,
-    HARDWARE_vtx_amp_vref,
-    HARDWARE_vtx_nss,
-    HARDWARE_vtx_miso,
-    HARDWARE_vtx_mosi,
-    HARDWARE_vtx_sck,
-    HARDWARE_vtx_amp_vpd_25mW,
-    HARDWARE_vtx_amp_vpd_100mW,
-    HARDWARE_vtx_amp_pwm_25mW,
-    HARDWARE_vtx_amp_pwm_100mW,
+    // Relay Control
+    HARDWARE_relay1,             // Relay điều khiển 1
+    HARDWARE_relay2,             // Relay điều khiển 2
 
+    // High Current Outputs
+    HARDWARE_high_current_out1,  // Đầu ra dòng cao 1
+    HARDWARE_high_current_out2,  // Đầu ra dòng cao 2
+
+    // Medium Current Outputs
+    HARDWARE_med_current_out1,   // Đầu ra dòng trung bình 1
+    HARDWARE_med_current_out2,   // Đầu ra dòng trung bình 2
+    HARDWARE_med_current_out3,   // Đầu ra dòng trung bình 3
+    HARDWARE_med_current_out4,   // Đầu ra dòng trung bình 4
+
+    // Analog Inputs
+    HARDWARE_analog_in1,         // Đầu vào analog 1
+    HARDWARE_analog_in2,         // Đầu vào analog 2
+
+    // Digital Inputs
+    HARDWARE_digital_in1,        // Đầu vào digital 1
+    HARDWARE_digital_in2,        // Đầu vào digital 2
+
+        // I2S Pins
+    HARDWARE_i2s_clk,        // Chân xung clock của I2S
+    HARDWARE_i2s_data,       // Chân dữ liệu của I2S
+    HARDWARE_i2s_latch,      // Chân latch của I2S
+    
     HARDWARE_LAST
 } nameType;
-
+ 
 bool hardware_init();
 const int hardware_pin(nameType name);
 const bool hardware_flag(nameType name);

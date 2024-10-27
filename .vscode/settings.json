@@ -11,6 +11,9 @@
         "memory": "cpp",
         "random": "cpp",
         "initializer_list": "cpp",
-        "span": "cpp"
-    }
+        "span": "cpp",
+        "compare": "cpp",
+        "typeinfo": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

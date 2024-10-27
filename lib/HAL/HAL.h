@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "../Config.h"
+#include "Config.h"
 #include "i2s.h"
 #include "fastio.h"
 

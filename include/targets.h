@@ -235,15 +235,8 @@
 #define DEBUG_CRSF_NO_OUTPUT
 #endif
 
-#if defined(DEBUG_CRSF_NO_OUTPUT)
-#define OPT_CRSF_RCVR_NO_SERIAL true
-#elif defined(TARGET_UNIFIED_RX)
 extern bool pwmSerialDefined;
-
 #define OPT_CRSF_RCVR_NO_SERIAL (GPIO_PIN_RCSIGNAL_RX == UNDEF_PIN && GPIO_PIN_RCSIGNAL_TX == UNDEF_PIN && !pwmSerialDefined)
-#else
-#define OPT_CRSF_RCVR_NO_SERIAL false
-#endif
 
 #if defined(USE_ANALOG_VBAT) && !defined(GPIO_ANALOG_VBAT)
 #define GPIO_ANALOG_VBAT        A0
@@ -276,7 +269,7 @@ extern bool pwmSerialDefined;
 #error "Either RADIO_SX127X, RADIO_LR1121 or RADIO_SX128X must be defined!"
 #endif
 
-#if defined(TARGET_UNIFIED_TX) || defined(TARGET_UNIFIED_RX)
+
 #if defined(PLATFORM_ESP32)
 #include <soc/uart_pins.h>
 #endif
@@ -287,4 +280,3 @@ extern bool pwmSerialDefined;
 #define U0TXD_GPIO_NUM (1)
 #endif
 #include "hardware.h"
-#endif
