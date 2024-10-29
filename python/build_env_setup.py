@@ -37,7 +37,8 @@ selected_target = targets[0] if not choice else targets[int(choice) - 1]
 # Lấy thông tin từ target đã chọn
 target_name = selected_target["name"]
 target_version = selected_target["version"]
-target_part = selected_target["part"]
+target_part = os.path.join(env['PROJECT_DIR'], "hardware", selected_target["part"])
+
 
 print(f"\nĐã chọn target: {target_name}")
 print(f"Phiên bản: {target_version}")
@@ -48,7 +49,7 @@ try:
     with open(target_part, "r") as f:
         target_part = json.load(f)
 except FileNotFoundError:
-    print(f"Tệp cấu hình '{hardware_json_path}' không tồn tại, dừng quá trình build.")
+    print(f"Tệp cấu hình '{target_part}' không tồn tại, dừng quá trình build.")
     env.Exit(1)
 
 # Hàm ghi thông tin vào cuối file .bin
