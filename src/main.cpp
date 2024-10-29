@@ -6,5 +6,11 @@ device_affinity_t ui_devices[] = {
     {&RGB_device, 0},
 #endif
 };
-void setup() {}
+void setup()
+{
+    Serial.begin(115200);
+#ifdef HAS_RGB
+    Serial.print("HAS_RGB");
+#endif
+}
 void loop() {}
