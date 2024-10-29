@@ -18,7 +18,7 @@ static device_affinity_t *uiDevices;
 static uint8_t deviceCount;
 
 static bool eventFired[2] = {false, false};
-// static connectionState_e lastConnectionState[2] = {disconnected, disconnected};
+static connectionState_e lastConnectionState[2] = {disconnected, disconnected};
 static bool lastModelMatch[2] = {false, false};
 
 static unsigned long deviceTimeout[16] = {0};
@@ -113,23 +113,23 @@ static int _devicesUpdate(unsigned long now)
     const int32_t core = CURRENT_CORE;
     const int32_t coreMulti = (core == -1) ? 0 : core;
 
-    // bool newModelMatch = connectionHasModelMatch && teamraceHasModelMatch;
-    // bool handleEvents = eventFired[coreMulti] || lastConnectionState[coreMulti] != connectionState || lastModelMatch[coreMulti] != newModelMatch;
+    bool newModelMatch = connectionHasModelMatch && teamraceHasModelMatch;
+    bool handleEvents = eventFired[coreMulti] || lastConnectionState[coreMulti] != connectionState || lastModelMatch[coreMulti] != newModelMatch;
     eventFired[coreMulti] = false;
-    // lastConnectionState[coreMulti] = connectionState;
-    // lastModelMatch[coreMulti] = newModelMatch;
+    lastConnectionState[coreMulti] = connectionState;
+    lastModelMatch[coreMulti] = newModelMatch;
 
     for(size_t i=0 ; i<deviceCount ; i++)
     {
         if (uiDevices[i].core == core || core == -1) {
-            // if (handleEvents && uiDevices[i].device->event)
-            // {
-            //     int delay = (uiDevices[i].device->event)();
-            //     if (delay != DURATION_IGNORE)
-            //     {
-            //         deviceTimeout[i] = delay == DURATION_NEVER ? 0xFFFFFFFF : now + delay;
-            //     }
-            // }
+            if (handleEvents && uiDevices[i].device->event)
+            {
+                int delay = (uiDevices[i].device->event)();
+                if (delay != DURATION_IGNORE)
+                {
+                    deviceTimeout[i] = delay == DURATION_NEVER ? 0xFFFFFFFF : now + delay;
+                }
+            }
         }
     }
 

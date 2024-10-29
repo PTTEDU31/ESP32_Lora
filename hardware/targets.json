@@ -1,0 +1,14 @@
+{
+    "target": [
+        {
+            "name": "ESP32-S3-base",
+            "version": "1.1.0",
+            "part": "ESP32-S3-2400.json"
+        },
+        {
+            "name": "ESP32-S3-0.1",
+            "version": "1.1.0",
+            "part": "ESP32-S3-2400.json"
+        }
+    ]
+}

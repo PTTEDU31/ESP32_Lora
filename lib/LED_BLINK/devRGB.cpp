@@ -20,8 +20,8 @@
 // #if (defined(PLATFORM_ESP32) || defined(PLATFORM_ESP8266)) && defined(GPIO_PIN_LED_WS2812)
 
 // static uint8_t pixelCount;
-// static uint8_t *statusLEDs;
-// static uint8_t statusLEDcount;
+static uint8_t *statusLEDs;
+static uint8_t statusLEDcount;
 // static uint8_t *vtxStatusLEDs;
 // static uint8_t vtxLEDcount;
 // static uint8_t *bootLEDs;
@@ -707,7 +707,7 @@ static int start()
 }
 static int timeout()
 {
-    digitalWrite(GPIO_PIN_LED_WS2812,!(digitalRead(GPIO_PIN_LED_WS2812)))
+    digitalWrite(GPIO_PIN_LED_WS2812,!(digitalRead(GPIO_PIN_LED_WS2812)));
     return 500;
 }
 device_t RGB_device = {
