@@ -58,7 +58,6 @@ constexpr size_t ELRSOPTS_DEVICENAME_SIZE = 16;
 constexpr size_t ELRSOPTS_OPTIONS_SIZE = 512;
 constexpr size_t ELRSOPTS_HARDWARE_SIZE = 2048;
 
-#if defined(TARGET_UNIFIED_TX) || defined(TARGET_UNIFIED_RX)
 extern firmware_options_t firmwareOptions;
 extern char product_name[];
 extern char device_name[];
@@ -71,10 +70,3 @@ extern void saveOptions();
 #include "EspFlashStream.h"
 bool options_HasStringInFlash(EspFlashStream &strmFlash);
 void options_SetTrueDefaults();
-#else
-extern firmware_options_t firmwareOptions;
-extern const char device_name[];
-extern const char *product_name;
-extern bool options_init();
-
-#endif

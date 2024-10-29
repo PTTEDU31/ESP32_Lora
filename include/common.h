@@ -5,6 +5,7 @@
 #include "config.h"
 #include "helpers.h"
 #include "logging.h"
+// #include "device.h"
 
 #define UID_LEN             6
 
