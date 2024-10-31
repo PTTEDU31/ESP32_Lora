@@ -2,7 +2,6 @@
 
 #include "targets.h"
 #include "common.h"
-#include "config.h"
 #include "helpers.h"
 #include "logging.h"
 // #include "device.h"
