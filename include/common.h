@@ -1,13 +1,20 @@
 #pragma once
 
+#ifndef UNIT_TEST
 #include "targets.h"
-#include "common.h"
-#include "helpers.h"
-#include "logging.h"
-// #include "device.h"
 
+// #if defined(RADIO_SX127X)
+// #include "SX127xDriver.h"
+// #elif defined(RADIO_LR1121)
+// #include "LR1121Driver.h"
+// #elif defined(RADIO_SX128X)
+// #include "SX1280Driver.h"
+// #else
+// #error "Radio configuration is not valid!"
+#endif
+
+#define OTA_VERSION_ID      4
 #define UID_LEN             6
-
 
 typedef enum
 {
@@ -28,6 +35,17 @@ typedef enum
     hardwareUndefined
 } connectionState_e;
 
-extern bool teamraceHasModelMatch;
+enum {
+    RADIO_TYPE_SX127x_LORA,
+    RADIO_TYPE_LR1121_LORA_900,
+    RADIO_TYPE_LR1121_LORA_2G4,
+    RADIO_TYPE_LR1121_GFSK_900,
+    RADIO_TYPE_LR1121_GFSK_2G4,
+    RADIO_TYPE_LR1121_LORA_DUAL,
+    RADIO_TYPE_SX128x_LORA,
+    RADIO_TYPE_SX128x_FLRC,
+};
+
+extern uint8_t UID[UID_LEN];
 extern connectionState_e connectionState;
-void setupTargetCommon();
+extern bool teamraceHasModelMatch;

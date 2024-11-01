@@ -12,18 +12,7 @@ def get_version():
         version = "1.0.0"
     return version
 
-# Đường dẫn tới tệp targets.json
-targets_json_path = os.path.join(env['PROJECT_DIR'], "hardware", "targets.json")
-hardware_json_path = os.path.join(env['PROJECT_DIR'], "hardware", "hardware.json")
 
-# Đọc tệp targets.json và lấy danh sách các target
-try:
-    with open(targets_json_path, "r") as f:
-        targets_data = json.load(f)
-        targets = targets_data.get("target", [])
-except FileNotFoundError:
-    print("File 'targets.json' không tồn tại, dừng quá trình build.")
-    env.Exit(1)
 
 # Hàm ghi thông tin vào cuối file .bin
 def append_hardware_info(source, target, env):
@@ -57,12 +46,29 @@ def append_hardware_info(source, target, env):
     bin_path = env.subst("$BUILD_DIR/${PROGNAME}.bin")
 
     with open(bin_path, "ab") as bin_file:
-        bin_file.write(json.dumps(target_part_data).encode())
+        layout = (json.JSONEncoder().encode(target_part_data).encode() + (b'\0' * 2048))[0:2048]
+        bin_file.write(layout)
         print(f"Đã thêm thông tin từ '{target_part_path}' vào cuối {bin_path}")
 
 # Thêm hành động Post-Build để ghi thông tin vào file .bin
 env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", append_hardware_info)
+# Đường dẫn tới tệp targets.json
+targets_json_path = os.path.join(env['PROJECT_DIR'], "hardware", "targets.json")
+hardware_json_path = os.path.join(env['PROJECT_DIR'], "hardware", "hardware.json")
 
+
+try:
+    os.remove(env['PROJECT_BUILD_DIR'] + '/' + env['PIOENV'] +'/'+ env['PROGNAME'] + '.bin')
+except FileNotFoundError:
+    None
+# Đọc tệp targets.json và lấy danh sách các target
+try:
+    with open(targets_json_path, "r") as f:
+        targets_data = json.load(f)
+        targets = targets_data.get("target", [])
+except FileNotFoundError:
+    print("File 'targets.json' không tồn tại, dừng quá trình build.")
+    env.Exit(1)
 # In thông tin môi trường build và phiên bản
 platform = env.get('PIOPLATFORM', '')
 build_env = env.get('PIOENV', '').upper()

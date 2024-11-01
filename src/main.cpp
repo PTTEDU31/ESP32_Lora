@@ -1,5 +1,4 @@
-#include "common.h"
-
+#include "lora_common.h"
 #include "devLED.h"
 void device1_initialize() { /* Cấu hình IO cho thiết bị 1 */ }
 int device1_start() { return 1000; }  // Gọi `timeout` sau 1000 ms
@@ -30,5 +29,5 @@ void setup() {
 void loop() {
     unsigned long now = millis();
     devicesUpdate(now);
-    // Thực hiện các công việc khác
+    Serial.println(xPortGetCoreID());
 }

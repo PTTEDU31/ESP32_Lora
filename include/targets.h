@@ -35,15 +35,6 @@
 #if defined(USE_OLED_I2C) || defined(USE_OLED_SPI) || defined(USE_OLED_SPI_SMALL) || defined(HAS_TFT_SCREEN)
 #define HAS_SCREEN
 #endif
-#if defined(GPIO_PIN_SPI_VTX_NSS)
-#if !defined(HAS_VTX_SPI)
-#define HAS_VTX_SPI
-#define HAS_MSP_VTX
-#define OPT_HAS_VTX_SPI true
-#endif
-#else
-#define OPT_HAS_VTX_SPI false
-#endif
 
 #ifndef USE_TX_BACKPACK
 #define OPT_USE_TX_BACKPACK false
@@ -181,11 +172,6 @@
 #ifndef GPIO_PIN_BACKPACK_BOOT
 #define GPIO_PIN_BACKPACK_BOOT UNDEF_PIN
 #endif
-
-#ifndef GPIO_PIN_SPI_VTX_NSS
-#define GPIO_PIN_SPI_VTX_NSS UNDEF_PIN
-#endif
-
 
 #if defined(TARGET_TX)
 #if defined(PLATFORM_ESP32)
