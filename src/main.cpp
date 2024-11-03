@@ -1,6 +1,5 @@
 #include "lora_common.h"
 #include "devLED.h"
-
 device_affinity_t devices[] = {
     {&RGB_device, 1},
 };
@@ -15,4 +14,5 @@ void setup() {
 void loop() {
     unsigned long now = millis();
     devicesUpdate(now);
+    // Serial.println(xPortGetCoreID());
 }
