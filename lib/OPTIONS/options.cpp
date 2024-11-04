@@ -62,6 +62,9 @@ void saveOptions(Stream &stream, bool customised)
         doc["wifi-ssid"] = firmwareOptions.home_wifi_ssid;
         doc["wifi-password"] = firmwareOptions.home_wifi_password;
     }
+    doc["domain"] = firmwareOptions.domain;
+    doc["customised"] = customised;
+    doc["flash-discriminator"] = firmwareOptions.flash_discriminator;
 
     serializeJson(doc, stream);
 }
@@ -141,11 +144,11 @@ static void options_LoadFromFlashOrFile(EspFlashStream &strmFlash)
     {
         firmwareOptions.hasUID = false;
     }
-        int32_t wifiInterval = doc["wifi-on-interval"] | -1;
+    int32_t wifiInterval = doc["wifi-on-interval"] | -1;
     firmwareOptions.wifi_auto_on_interval = wifiInterval == -1 ? -1 : wifiInterval * 1000;
     strlcpy(firmwareOptions.home_wifi_ssid, doc["wifi-ssid"] | "", sizeof(firmwareOptions.home_wifi_ssid));
     strlcpy(firmwareOptions.home_wifi_password, doc["wifi-password"] | "", sizeof(firmwareOptions.home_wifi_password));
-    
+
     firmwareOptions.domain = doc["domain"] | 0;
     firmwareOptions.flash_discriminator = doc["flash-discriminator"] | 0U;
 
@@ -167,7 +170,7 @@ void options_SetTrueDefaults()
 /**
  * @brief:  Initializes product_name / device_name either from flash or static values
  * @return: true if the names came from flash, or false if the values are default
-*/
+ */
 static bool options_LoadProductAndDeviceName(EspFlashStream &strmFlash)
 {
     if (options_HasStringInFlash(strmFlash))
@@ -214,11 +217,11 @@ bool options_init()
     options_LoadFromFlashOrFile(strmFlash);
     // hardware.json
     bool hasHardware = hardware_init(strmFlash);
-        logo_image = baseAddr + ESP.getSketchSize() +
-        LORAOPTS_PRODUCTNAME_SIZE +
-        LORAOPTS_DEVICENAME_SIZE +
-        LORAOPTS_OPTIONS_SIZE +
-        LORAOPTS_HARDWARE_SIZE;
+    logo_image = baseAddr + ESP.getSketchSize() +
+                 LORAOPTS_PRODUCTNAME_SIZE +
+                 LORAOPTS_DEVICENAME_SIZE +
+                 LORAOPTS_OPTIONS_SIZE +
+                 LORAOPTS_HARDWARE_SIZE;
 
     // debugFreeInitLogger();
 

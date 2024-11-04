@@ -1,4 +1,4 @@
-#if defined(TARGET_UNIFIED_TX) || defined(TARGET_UNIFIED_RX)
+// #if defined(TARGET_UNIFIED_TX) || defined(TARGET_UNIFIED_RX)
 
 #include "options.h"
 #include "helpers.h"
@@ -284,4 +284,4 @@ const uint16_t* hardware_u16_array(nameType name)
     return (uint16_t *)hardware[name].array_value;
 }
 
-#endif
+// #endif
