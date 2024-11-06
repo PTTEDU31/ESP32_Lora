@@ -15,7 +15,7 @@ def get_version():
 
 
 # Hàm ghi thông tin vào cuối file .bin
-def append_hardware_info(source, target, env):
+def Config_hardware_info(source, target, env):
     # Hiển thị danh sách các target cho người dùng lựa chọn
     print("Chọn target (nhập số):")
     for i, target in enumerate(targets):
@@ -45,13 +45,17 @@ def append_hardware_info(source, target, env):
     # Lấy đường dẫn file .bin từ môi trường build
     bin_path = env.subst("$BUILD_DIR/${PROGNAME}.bin")
 
+    defines = json.JSONEncoder().encode(env['OPTIONS_JSON'])
+
     with open(bin_path, "ab") as bin_file:
+        defines = (defines.encode() + (b'\0' * 512))[0:512]
+        bin_file.write(defines)
         layout = (json.JSONEncoder().encode(target_part_data).encode() + (b'\0' * 2048))[0:2048]
         bin_file.write(layout)
         print(f"Đã thêm thông tin từ '{target_part_path}' vào cuối {bin_path}")
 
 # Thêm hành động Post-Build để ghi thông tin vào file .bin
-env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", append_hardware_info)
+env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", Config_hardware_info)
 # Đường dẫn tới tệp targets.json
 targets_json_path = os.path.join(env['PROJECT_DIR'], "hardware", "targets.json")
 hardware_json_path = os.path.join(env['PROJECT_DIR'], "hardware", "hardware.json")
