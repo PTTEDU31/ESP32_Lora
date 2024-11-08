@@ -14,4 +14,4 @@
 // #include "POWERMGNT.h"
 // #include "deferred.h"
 
-// void setupTargetCommon();
+void setupTargetCommon();
