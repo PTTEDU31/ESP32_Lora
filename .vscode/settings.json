@@ -4,6 +4,9 @@
     "files.associations": {
         "string_view": "cpp",
         "condition_variable": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "*.tcc": "cpp",
+        "ostream": "cpp",
+        "compare": "cpp"
     }
 }

@@ -3,10 +3,8 @@
 #include "devLED.h"
 #include "devWIFI.h"
 device_affinity_t devices[] = {
-#ifdef HAS_RGB
     {&RGB_device, 1},
-#endif
-    {&WIFI_device, 1}};
+};
 
 Stream *NodeUSB;
 Stream *NodeBackpack;
@@ -106,9 +104,11 @@ void setup()
         NodeBackpack->printf("\nRS485_Rx: %d  GPRS_Tx: %d Baud:%d", GPIO_PIN_RS485_TX, GPIO_PIN_RS485_RX, RS485_BAUD);
         NodeBackpack->printf("\nWifi_SSID: %s, Wifi_Pass: %s", firmwareOptions.home_wifi_ssid, firmwareOptions.home_wifi_password);
         NodeBackpack->print(getOptions());
+
         devicesRegister(devices, ARRAY_SIZE(devices)); // Đăng ký 2 thiết bị
         devicesInit();
         devicesStart();
+        connectionState = wifiUpdate;
     }
 }
 

@@ -1,9 +1,22 @@
 #include "targets.h"
 #include "common.h"
+#include "logging.h"
 #include "helpers.h"
 #include "device.h"
 
 ///////////////////////////////////////
+// Even though we aren't using anything this keeps the PIO dependency analyzer happy!
+
+// #if defined(RADIO_SX127X)
+// #include "SX127xDriver.h"
+// #elif defined(RADIO_LR1121)
+// #include "LR1121Driver.h"
+// #elif defined(RADIO_SX128X)
+// #include "SX1280Driver.h"
+// #else
+// #error Invalid radio configuration!
+// #endif
+
 #if defined(PLATFORM_ESP32)
 #include <soc/soc_caps.h>
 #define MULTICORE (SOC_CPU_CORES_NUM > 1)
@@ -40,7 +53,7 @@ void devicesRegister(device_affinity_t *devices, uint8_t count)
     #if MULTICORE
         taskSemaphore = xSemaphoreCreateBinary();
         completeSemaphore = xSemaphoreCreateBinary();
-        disableCore0WDT();
+        // disableCore0WDT();
         xTaskCreatePinnedToCore(deviceTask, "deviceTask", 32768, NULL, 0, &xDeviceTask, 0);
     #endif
 }
@@ -149,6 +162,7 @@ static int _devicesUpdate(unsigned long now)
             }
         }
     }
+    DBGLN("%d",smallest_delay);
     return smallest_delay;
 }
 
