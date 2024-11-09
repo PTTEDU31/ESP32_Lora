@@ -1,0 +1,18 @@
+{
+    "target": [
+        {
+            "name": "ESP32-S3-base",
+            "version": "1.1.0",
+            "part": "ESP32-S3-2400.json",
+            "product_name": "ESP32 Series",
+            "lua_name": "ESP32_LUA_BASE"
+        },
+        {
+            "name": "ESP32-S3-0.1",
+            "version": "1.1.0",
+            "part": "ESP32-S3-2400.json",
+            "product_name": "ESP32 Test Module",
+            "lua_name": "ESP32_LUA_TEST"
+        }
+    ]
+}
