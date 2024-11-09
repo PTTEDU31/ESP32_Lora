@@ -144,6 +144,18 @@ typedef enum {
     HARDWARE_vtx_amp_vpd_100mW,
     HARDWARE_vtx_amp_pwm_25mW,
     HARDWARE_vtx_amp_pwm_100mW,
+    // RS485
+    HARDWARE_has_RS485,
+    HARDWARE_RS485_baud,
+    HARDWARE_RS485_rx,
+    HARDWARE_RS485_tx,
+
+    // GPRS
+    HARDWARE_has_GPRS,
+    HARDWARE_GPRS_protocal,
+    HARDWARE_GPRS_baud,
+    HARDWARE_GPRS_rx,
+    HARDWARE_GPRS_tx,
 
     HARDWARE_LAST
 } nameType;

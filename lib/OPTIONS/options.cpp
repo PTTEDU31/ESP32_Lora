@@ -50,7 +50,7 @@ void saveOptions(Stream &stream, bool customised)
 
     if (firmwareOptions.hasUID)
     {
-        JsonArray uid = doc.createNestedArray("uid");
+        JsonArray uid = doc["uid"].to<JsonArray>();
         copyArray(firmwareOptions.uid, sizeof(firmwareOptions.uid), uid);
     }
     if (firmwareOptions.wifi_auto_on_interval != -1)
@@ -151,7 +151,6 @@ static void options_LoadFromFlashOrFile(EspFlashStream &strmFlash)
 
     firmwareOptions.domain = doc["domain"] | 0;
     firmwareOptions.flash_discriminator = doc["flash-discriminator"] | 0U;
-
     builtinOptions.clear();
     saveOptions(builtinOptions, doc["customised"] | false);
 }
@@ -188,7 +187,9 @@ static bool options_LoadProductAndDeviceName(EspFlashStream &strmFlash)
     else
     {
         strcpy(product_name, "Undefied LORA NODE");
-        strcpy(device_name, "Undefied LORA NODE");
+        strncpy(device_name, "Undefied LORA NODE", sizeof(device_name) - 1);
+        device_name[sizeof(device_name) - 1] = '\0'; // Đảm bảo chuỗi kết thúc đúng
+
         return false;
     }
 }

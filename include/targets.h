@@ -35,6 +35,15 @@
 #if defined(USE_OLED_I2C) || defined(USE_OLED_SPI) || defined(USE_OLED_SPI_SMALL) || defined(HAS_TFT_SCREEN)
 #define HAS_SCREEN
 #endif
+#if defined(GPIO_PIN_SPI_VTX_NSS)
+#if !defined(HAS_VTX_SPI)
+#define HAS_VTX_SPI
+#define HAS_MSP_VTX
+#define OPT_HAS_VTX_SPI true
+#endif
+#else
+#define OPT_HAS_VTX_SPI false
+#endif
 
 #ifndef USE_TX_BACKPACK
 #define OPT_USE_TX_BACKPACK false
@@ -173,6 +182,29 @@
 #define GPIO_PIN_BACKPACK_BOOT UNDEF_PIN
 #endif
 
+#ifndef GPIO_PIN_SPI_VTX_NSS
+#define GPIO_PIN_SPI_VTX_NSS UNDEF_PIN
+#endif
+
+#ifndef GPIO_PIN_RS485_TX
+#define GPIO_PIN_RS485_TX UNDEF_PIN
+#endif
+
+#ifndef GPIO_PIN_RS485_RX
+#define GPIO_PIN_RS485_RX UNDEF_PIN
+#endif
+
+#ifndef GPIO_PIN_GPRS_TX
+#define GPIO_PIN_GPRS_TX UNDEF_PIN
+#endif
+
+#ifndef GPIO_PIN_GPRS_RX
+#define GPIO_PIN_RS485_RX UNDEF_PIN
+#endif
+
+
+
+
 #if defined(TARGET_TX)
 #if defined(PLATFORM_ESP32)
 #ifndef GPIO_PIN_DEBUG_RX
@@ -221,8 +253,15 @@
 #define DEBUG_CRSF_NO_OUTPUT
 #endif
 
+#if defined(DEBUG_CRSF_NO_OUTPUT)
+#define OPT_CRSF_RCVR_NO_SERIAL true
+#elif defined(TARGET_UNIFIED_RX)
 extern bool pwmSerialDefined;
+
 #define OPT_CRSF_RCVR_NO_SERIAL (GPIO_PIN_RCSIGNAL_RX == UNDEF_PIN && GPIO_PIN_RCSIGNAL_TX == UNDEF_PIN && !pwmSerialDefined)
+#else
+#define OPT_CRSF_RCVR_NO_SERIAL false
+#endif
 
 #if defined(USE_ANALOG_VBAT) && !defined(GPIO_ANALOG_VBAT)
 #define GPIO_ANALOG_VBAT        A0
@@ -255,7 +294,7 @@ extern bool pwmSerialDefined;
 #error "Either RADIO_SX127X, RADIO_LR1121 or RADIO_SX128X must be defined!"
 #endif
 
-
+#if defined(TARGET_UNIFIED_TX) || defined(TARGET_UNIFIED_RX)
 #if defined(PLATFORM_ESP32)
 #include <soc/uart_pins.h>
 #endif
@@ -266,3 +305,4 @@ extern bool pwmSerialDefined;
 #define U0TXD_GPIO_NUM (1)
 #endif
 #include "hardware.h"
+#endif

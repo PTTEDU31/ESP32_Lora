@@ -16,7 +16,7 @@ typedef struct _options
     uint16_t    _version_;      // the version of this structure
     uint8_t     domain;         // depends on radio chip
     uint8_t hasUID;
-    uint8_t uuid[16]; // MY_UID derived from MY_BINDING_PHRASE
+    uint8_t uid[16]; // MY_UID derived from MY_BINDING_PHRASE
     uint32_t    flash_discriminator;    // Discriminator value used to determine if the device has been reflashed and therefore
                                         // the SPIFSS settings are obsolete and the flashed settings should be used in preference
     uint32_t    fan_min_runtime;
@@ -34,7 +34,7 @@ typedef struct _options
     //     uint8_t     buzzer_mode;            // 0 = disable all, 1 = beep once, 2 = disable startup beep, 3 = default tune, 4 = custom tune
     //     uint16_t    buzzer_melody[32][2];
     // #endif
-    uint32_t uart_baud; // only use for airport
+    uint32_t uart_baud; 
     // #endif
 } __attribute__((packed)) firmware_options_t;
 

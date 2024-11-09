@@ -10,7 +10,8 @@
 #endif
 #include <ArduinoJson.h>
 
-typedef enum {
+typedef enum
+{
     INT,
     BOOL,
     FLOAT,
@@ -18,7 +19,8 @@ typedef enum {
     COUNT
 } datatype_t;
 
-static const struct {
+static const struct
+{
     const nameType position;
     const char *name;
     const datatype_t type;
@@ -136,9 +138,20 @@ static const struct {
     {HARDWARE_vtx_amp_vpd_100mW, "vtx_amp_vpd_100mW", ARRAY},
     {HARDWARE_vtx_amp_pwm_25mW, "vtx_amp_pwm_25mW", ARRAY},
     {HARDWARE_vtx_amp_pwm_100mW, "vtx_amp_pwm_100mW", ARRAY},
+    {HARDWARE_has_RS485, "has_rs485", BOOL},
+    {HARDWARE_RS485_rx, "rs485_rx", INT},
+    {HARDWARE_RS485_tx, "rs485_tx", INT},
+    {HARDWARE_RS485_baud, "rs485_baud", INT},
+    {HARDWARE_has_GPRS, "has_gprs", BOOL},
+    {HARDWARE_GPRS_protocal, "GPRS_protocal", INT},
+    {HARDWARE_GPRS_baud, "GPRS_baud", INT}, // Tốc độ baud của GPRS
+    {HARDWARE_GPRS_rx, "GPRS_rx", INT},     // Chân RX của GPRS
+    {HARDWARE_GPRS_tx, "GPRS_tx", INT},     // Chân TX của GPRS
+
 };
 
-typedef union {
+typedef union
+{
     int int_value;
     bool bool_value;
     float float_value;
@@ -148,7 +161,7 @@ typedef union {
 static data_holder_t hardware[HARDWARE_LAST];
 static String builtinHardwareConfig;
 
-String& getHardware()
+String &getHardware()
 {
     File file = SPIFFS.open("/hardware.json", "r");
     if (!file || file.isDirectory())
@@ -166,54 +179,60 @@ String& getHardware()
 
 static void hardware_ClearAllFields()
 {
-    for (size_t i=0 ; i<ARRAY_SIZE(fields) ; i++) {
-        switch (fields[i].type) {
-            case INT:
-                hardware[fields[i].position].int_value = -1;
-                break;
-            case BOOL:
-                hardware[fields[i].position].bool_value = false;
-                break;
-            case FLOAT:
-                hardware[fields[i].position].float_value = 0.0;
-                break;
-            case ARRAY:
-                hardware[fields[i].position].array_value = nullptr;
-                break;
-            case COUNT:
-                hardware[fields[i].position].int_value = 0;
-                break;
+    for (size_t i = 0; i < ARRAY_SIZE(fields); i++)
+    {
+        switch (fields[i].type)
+        {
+        case INT:
+            hardware[fields[i].position].int_value = -1;
+            break;
+        case BOOL:
+            hardware[fields[i].position].bool_value = false;
+            break;
+        case FLOAT:
+            hardware[fields[i].position].float_value = 0.0;
+            break;
+        case ARRAY:
+            hardware[fields[i].position].array_value = nullptr;
+            break;
+        case COUNT:
+            hardware[fields[i].position].int_value = 0;
+            break;
         }
     }
 }
 
 static void hardware_LoadFieldsFromDoc(JsonDocument &doc)
 {
-    for (size_t i=0 ; i<ARRAY_SIZE(fields) ; i++) {
-        if (doc.containsKey(fields[i].name)) {
-            switch (fields[i].type) {
-                case INT:
-                    hardware[fields[i].position].int_value = doc[fields[i].name];
-                    break;
-                case BOOL:
-                    hardware[fields[i].position].bool_value = doc[fields[i].name];
-                    break;
-                case FLOAT:
-                    hardware[fields[i].position].float_value = doc[fields[i].name];
-                    break;
-                case ARRAY:
-                    {
-                        JsonArray array = doc[fields[i].name].as<JsonArray>();
-                        hardware[fields[i].position].array_value = new int16_t[array.size()];
-                        copyArray(doc[fields[i].name], hardware[fields[i].position].array_value, array.size());
-                    }
-                    break;
-                case COUNT:
-                    {
-                        JsonArray array = doc[fields[i].name].as<JsonArray>();
-                        hardware[fields[i].position].int_value = array.size();
-                    }
-                    break;
+    for (size_t i = 0; i < ARRAY_SIZE(fields); i++)
+    {
+        if (doc[fields[i].name].is<decltype(fields[i].type)>())
+        {
+
+            switch (fields[i].type)
+            {
+            case INT:
+                hardware[fields[i].position].int_value = doc[fields[i].name];
+                break;
+            case BOOL:
+                hardware[fields[i].position].bool_value = doc[fields[i].name];
+                break;
+            case FLOAT:
+                hardware[fields[i].position].float_value = doc[fields[i].name];
+                break;
+            case ARRAY:
+            {
+                JsonArray array = doc[fields[i].name].as<JsonArray>();
+                hardware[fields[i].position].array_value = new int16_t[array.size()];
+                copyArray(doc[fields[i].name], hardware[fields[i].position].array_value, array.size());
+            }
+            break;
+            case COUNT:
+            {
+                JsonArray array = doc[fields[i].name].as<JsonArray>();
+                hardware[fields[i].position].int_value = array.size();
+            }
+            break;
             }
         }
     }
@@ -227,8 +246,9 @@ bool hardware_init(EspFlashStream &strmFlash)
     Stream *strmSrc;
     JsonDocument doc;
     File file = SPIFFS.open("/hardware.json", "r");
-    if (!file || file.isDirectory()) {
-        constexpr size_t hardwareConfigOffset = ELRSOPTS_PRODUCTNAME_SIZE + ELRSOPTS_DEVICENAME_SIZE + ELRSOPTS_OPTIONS_SIZE;
+    if (!file || file.isDirectory())
+    {
+        constexpr size_t hardwareConfigOffset = LORAOPTS_PRODUCTNAME_SIZE + LORAOPTS_DEVICENAME_SIZE + LORAOPTS_OPTIONS_SIZE;
         strmFlash.setPosition(hardwareConfigOffset);
         if (!options_HasStringInFlash(strmFlash))
         {
@@ -248,7 +268,6 @@ bool hardware_init(EspFlashStream &strmFlash)
         return false;
     }
     serializeJson(doc, builtinHardwareConfig);
-
     hardware_LoadFieldsFromDoc(doc);
 
     return true;
@@ -274,12 +293,12 @@ const float hardware_float(nameType name)
     return hardware[name].float_value;
 }
 
-const int16_t* hardware_i16_array(nameType name)
+const int16_t *hardware_i16_array(nameType name)
 {
     return hardware[name].array_value;
 }
 
-const uint16_t* hardware_u16_array(nameType name)
+const uint16_t *hardware_u16_array(nameType name)
 {
     return (uint16_t *)hardware[name].array_value;
 }

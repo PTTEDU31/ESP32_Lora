@@ -2,6 +2,8 @@
     "idf.portWin": "COM5",
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "condition_variable": "cpp",
+        "cstdlib": "cpp"
     }
 }

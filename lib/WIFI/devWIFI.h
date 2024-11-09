@@ -7,4 +7,3 @@
 
 extern device_t WIFI_device;
 #define HAS_WIFI
-#endif
