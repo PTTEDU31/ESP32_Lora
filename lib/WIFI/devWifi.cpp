@@ -2,6 +2,7 @@
 
 #if defined(PLATFORM_ESP8266) || defined(PLATFORM_ESP32)
 
+<<<<<<< Updated upstream
 #include <DNSServer.h>
 #ifdef ESP32
 #include <AsyncTCP.h>
@@ -15,6 +16,8 @@
 #endif
 #include "ESPAsyncWebServer.h"
 
+=======
+>>>>>>> Stashed changes
 #include "hwTimer.h"
 #include "logging.h"
 #include "options.h"
@@ -43,6 +46,7 @@ static wl_status_t laststatus = WL_IDLE_STATUS;
 volatile WiFiMode_t wifiMode = WIFI_OFF;
 static volatile WiFiMode_t changeMode = WIFI_OFF;
 static volatile unsigned long changeTime = 0;
+<<<<<<< Updated upstream
 
 static AsyncWebServer server(80);
 static bool servicesStarted = false;
@@ -72,7 +76,157 @@ static struct {
 
 void setWifiUpdateMode()
 {
+=======
+static bool servicesStarted = false;
+
+void setWifiUpdateMode()
+{
+  // No need to ExitBindingMode(), the radio will be stopped stopped when start the Wifi service.
+  // Need to change this before the mode change event so the LED is updated
+  //   InBindingMode = false;
+>>>>>>> Stashed changes
   connectionState = wifiUpdate;
+}
+void HandleMSP2WIFI()
+{
+#if defined(USE_MSP_WIFI) && defined(TARGET_RX)
+  // check is there is any data to write out
+  if (crsf2msp.FIFOout.peekSize() > 0)
+  {
+    const uint16_t len = crsf2msp.FIFOout.popSize();
+    uint8_t data[len];
+    crsf2msp.FIFOout.popBytes(data, len);
+    wifi2tcp.write(data, len);
+  }
+
+  // check if there is any data to read in
+  const uint16_t bytesReady = wifi2tcp.bytesReady();
+  if (bytesReady > 0)
+  {
+    uint8_t data[bytesReady];
+    wifi2tcp.read(data);
+    msp2crsf.parse(data, bytesReady);
+  }
+
+  wifi2tcp.handle();
+#endif
+}
+static void startServices()
+{
+  if (servicesStarted) {
+    // #if defined(PLATFORM_ESP32)
+    //   MDNS.end();
+    //   startMDNS();
+    // #endif
+    return;
+  }
+  return;
+}
+static void HandleWebUpdate()
+{
+  unsigned long now = millis();
+  wl_status_t status = WiFi.status();
+
+  if (status != laststatus && wifiMode == WIFI_STA)
+  {
+    DBGLN("WiFi status %d", status);
+    switch (status)
+    {
+    case WL_NO_SSID_AVAIL:
+    case WL_CONNECT_FAILED:
+    case WL_CONNECTION_LOST:
+      changeTime = now;
+      changeMode = WIFI_AP;
+      break;
+    case WL_DISCONNECTED: // try reconnection
+      changeTime = now;
+      break;
+    default:
+      break;
+    }
+    laststatus = status;
+  }
+  if (status != WL_CONNECTED && wifiMode == WIFI_STA && (now - changeTime) > 30000)
+  {
+    changeTime = now;
+    changeMode = WIFI_AP;
+    DBGLN("Connection failed %d", status);
+  }
+  if (changeMode != wifiMode && changeMode != WIFI_OFF && (now - changeTime) > 500)
+  {
+    switch (changeMode)
+    {
+    case WIFI_AP:
+      DBGLN("Changing to AP mode");
+      WiFi.disconnect();
+      wifiMode = WIFI_AP;
+#if defined(PLATFORM_ESP32)
+      WiFi.setHostname(wifi_hostname); // hostname must be set before the mode is set to STA
+#endif
+      WiFi.mode(wifiMode);
+#if defined(PLATFORM_ESP8266)
+      WiFi.setHostname(wifi_hostname); // hostname must be set before the mode is set to STA
+#endif
+      changeTime = now;
+#if defined(PLATFORM_ESP8266)
+      WiFi.setOutputPower(13.5);
+      WiFi.setPhyMode(WIFI_PHY_MODE_11N);
+#elif defined(PLATFORM_ESP32)
+      WiFi.setTxPower(WIFI_POWER_19_5dBm);
+#endif
+      WiFi.softAPConfig(ipAddress, ipAddress, netMsk);
+      WiFi.softAP(wifi_ap_ssid, wifi_ap_password);
+      startServices();
+      break;
+    case WIFI_STA:
+      DBGLN("Connecting to network '%s'", station_ssid);
+      wifiMode = WIFI_STA;
+#if defined(PLATFORM_ESP32)
+      WiFi.setHostname(wifi_hostname); // hostname must be set before the mode is set to STA
+#endif
+      WiFi.mode(wifiMode);
+#if defined(PLATFORM_ESP8266)
+      WiFi.setHostname(wifi_hostname); // hostname must be set after the mode is set to STA
+#endif
+      changeTime = now;
+#if defined(PLATFORM_ESP8266)
+      WiFi.setOutputPower(13.5);
+      WiFi.setPhyMode(WIFI_PHY_MODE_11N);
+#elif defined(PLATFORM_ESP32)
+      WiFi.setTxPower(WIFI_POWER_19_5dBm);
+      WiFi.setSortMethod(WIFI_CONNECT_AP_BY_SIGNAL);
+      WiFi.setScanMethod(WIFI_ALL_CHANNEL_SCAN);
+#endif
+      WiFi.begin(station_ssid, station_password);
+      startServices();
+    default:
+      break;
+    }
+#if defined(PLATFORM_ESP8266)
+    MDNS.notifyAPChange();
+#endif
+    changeMode = WIFI_OFF;
+  }
+
+#if defined(PLATFORM_ESP8266)
+  if (scanComplete)
+  {
+    WiFi.mode(wifiMode);
+    scanComplete = false;
+  }
+#endif
+
+  if (servicesStarted)
+  {
+    dnsServer.processNextRequest();
+#if defined(PLATFORM_ESP8266)
+    MDNS.update();
+#endif
+
+// #if defined(TARGET_TX) && defined(PLATFORM_ESP32)
+//     WifiJoystick::Loop(now);
+// #endif
+  }
 }
 static void startWiFi(unsigned long now)
 {
@@ -83,6 +237,13 @@ static void startWiFi(unsigned long now)
 
   if (connectionState < FAILURE_STATES)
   {
+<<<<<<< Updated upstream
+=======
+    hwTimer::stop();
+    // // Set transmit power to minimum
+    // POWERMGNT::setPower(MinPower);
+
+>>>>>>> Stashed changes
     setWifiUpdateMode();
   }
 
@@ -116,6 +277,13 @@ static void initialize()
 #if defined(PLATFORM_ESP8266)
   WiFi.forceSleepBegin();
 #endif
+<<<<<<< Updated upstream
+=======
+  // Nếu cần, có thể thêm chức năng button để kích hoạt Wi-Fi
+  // registerButtonFunction(ACTION_START_WIFI, [](){
+  //   setWifiUpdateMode();
+  // });
+>>>>>>> Stashed changes
 }
 
 // Hàm bắt đầu Wi-Fi
@@ -350,8 +518,35 @@ static int timeout()
   if (wifiStarted)
   {
     HandleWebUpdate();
+<<<<<<< Updated upstream
     return 2;
   }
+=======
+    HandleMSP2WIFI();
+#if defined(PLATFORM_ESP8266)
+    // When in STA mode, a small delay reduces power use from 90mA to 30mA when idle
+    // In AP mode, it doesn't seem to make a measurable difference, but does not hurt
+    // Only done on 8266 as the ESP32 runs a throttled task
+    if (!Update.isRunning())
+      delay(1);
+    return DURATION_IMMEDIATELY;
+#else
+    // All the web traffic is async apart from changing modes and MSP2WIFI
+    // No need to run balls-to-the-wall; the wifi runs on this core too (0)
+    return 2;
+#endif
+  }
+#if defined(TARGET_TX)
+  // if webupdate was requested before or .wifi_auto_on_interval has elapsed but uart is not detected
+  // start webupdate, there might be wrong configuration flashed.
+  if (firmwareOptions.wifi_auto_on_interval != -1 && webserverPreventAutoStart == false && connectionState < wifiUpdate && !wifiStarted)
+  {
+    DBGLN("No CRSF ever detected, starting WiFi");
+    setWifiUpdateMode();
+    return DURATION_IMMEDIATELY;
+  }
+#endif
+>>>>>>> Stashed changes
   return DURATION_NEVER;
 }
 

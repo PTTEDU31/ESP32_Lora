@@ -1,6 +1,7 @@
 #include <stdint.h>
 
-typedef enum {
+typedef enum
+{
     // Serial
     HARDWARE_serial_rx,
     HARDWARE_serial_tx,
@@ -88,12 +89,12 @@ typedef enum {
     HARDWARE_ledidx_rgb_boot_count,
 
     // OLED/TFT
-    HARDWARE_screen_cs,       // SPI
-    HARDWARE_screen_dc,       // SPI
-    HARDWARE_screen_mosi,     // SPI
-    HARDWARE_screen_rst,      // SPI & I2c (optional)
-    HARDWARE_screen_sck,      // clock for SPI & I2C
-    HARDWARE_screen_sda,      // I2C data
+    HARDWARE_screen_cs,   // SPI
+    HARDWARE_screen_dc,   // SPI
+    HARDWARE_screen_mosi, // SPI
+    HARDWARE_screen_rst,  // SPI & I2c (optional)
+    HARDWARE_screen_sck,  // clock for SPI & I2C
+    HARDWARE_screen_sda,  // I2C data
 
     // screen_type == 0 is no screen
     HARDWARE_screen_type,
@@ -113,7 +114,7 @@ typedef enum {
     HARDWARE_i2c_scl,
     HARDWARE_i2c_sda,
     HARDWARE_misc_gsensor_int,
-    HARDWARE_misc_buzzer,  // stm32 only
+    HARDWARE_misc_buzzer, // stm32 only
     HARDWARE_misc_fan_en,
     HARDWARE_misc_fan_pwm,
     HARDWARE_misc_fan_tacho,
@@ -156,7 +157,10 @@ typedef enum {
     HARDWARE_GPRS_baud,
     HARDWARE_GPRS_rx,
     HARDWARE_GPRS_tx,
-
+    // i2s
+    HARDWARE_i2s_scl,
+    HARDWARE_i2s_sda,
+    HARDWARE_i2s_latch,
     HARDWARE_LAST
 } nameType;
 
@@ -165,5 +169,5 @@ const int hardware_pin(nameType name);
 const bool hardware_flag(nameType name);
 const int hardware_int(nameType name);
 const float hardware_float(nameType name);
-const int16_t* hardware_i16_array(nameType name);
-const uint16_t* hardware_u16_array(nameType name);
+const int16_t *hardware_i16_array(nameType name);
+const uint16_t *hardware_u16_array(nameType name);

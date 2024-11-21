@@ -8,3 +8,4 @@
 **/__pycache__/
 *.pyc
 *.pyo
+python/__pycache__/lora_helpers.cpython-311.pyc

@@ -2,6 +2,7 @@
 #include "options.h"
 #include "devLED.h"
 #include "devWIFI.h"
+#include "PWM.h"
 device_affinity_t devices[] = {
     {&RGB_device, 1},
     {&WIFI_device,1}
@@ -49,29 +50,32 @@ void setupSerial()
     Serial.begin(115200);
 #endif
 
-// Setup TxUSB
+// Setup NodeUSB
 #if defined(PLATFORM_ESP32_S3)
-    USBSerial.begin(firmwareOptions.uart_baud);
-    NodeUSB = &USBSerial;
+  USBSerial.begin(firmwareOptions.uart_baud);
+  NodeUSB = &USBSerial;
 #elif defined(PLATFORM_ESP32)
-    if (GPIO_PIN_DEBUG_RX == 3 && GPIO_PIN_DEBUG_TX == 1)
-    {
-
-        NodeUSB = NodeBackpack;
-    }
-    else if (GPIO_PIN_RCSIGNAL_RX == U0RXD_GPIO_NUM && GPIO_PIN_RCSIGNAL_TX == U0TXD_GPIO_NUM)
-    {
-        NodeUSB = new NullStream();
-    }
-    else
-    {
-        // The backpack is on a separate UART to UART0
-        // Set TxUSB to pins 3, 1 so that we can access TxUSB and TxBackpack independantly
-        NodeUSB = new HardwareSerial(1);
-        ((HardwareSerial *)TxUSB)->begin(firmwareOptions.uart_baud, SERIAL_8N1, 3, 1);
-    }
-#else
+  if (GPIO_PIN_DEBUG_RX == 3 && GPIO_PIN_DEBUG_TX == 1)
+  {
+    // The backpack is already assigned on UART0 (pins 3, 1)
+    // This is also USB on modules that use DIPs
+    // Set NodeUSB to TxBackpack so that data goes to the same place
+    NodeUSB = NodeBackpack;
+  }
+  else if (GPIO_PIN_RCSIGNAL_RX == U0RXD_GPIO_NUM && GPIO_PIN_RCSIGNAL_TX == U0TXD_GPIO_NUM)
+  {
+    // This is an internal module, or an external module configured with a relay.  Do not setup NodeUSB.
     NodeUSB = new NullStream();
+  }
+  else
+  {
+    // The backpack is on a separate UART to UART0
+    // Set NodeUSB to pins 3, 1 so that we can access NodeUSB and TxBackpack independantly
+    NodeUSB = new HardwareSerial(1);
+    ((HardwareSerial *)NodeUSB)->begin(firmwareOptions.uart_baud, SERIAL_8N1, 3, 1);
+  }
+#else
+  NodeUSB = new NullStream();
 #endif
 }
 static void setupTarget()
@@ -101,16 +105,12 @@ void setup()
     {
 
         setupTarget();
-        NodeBackpack->printf("\nGPRS_Rx: %d  GPRS_Tx: %d Baud:%d", GPIO_PIN_GPRS_RX, GPIO_PIN_GPRS_TX, GPRS_BAUD);
-        NodeBackpack->printf("\nRS485_Rx: %d  GPRS_Tx: %d Baud:%d", GPIO_PIN_RS485_TX, GPIO_PIN_RS485_RX, RS485_BAUD);
-        NodeBackpack->printf("\nWifi_SSID: %s, Wifi_Pass: %s", firmwareOptions.home_wifi_ssid, firmwareOptions.home_wifi_password);
-        NodeBackpack->print(getOptions());
-
         devicesRegister(devices, ARRAY_SIZE(devices)); // Đăng ký 2 thiết bị
         devicesInit();
         devicesStart();
         connectionState = wifiUpdate;
     }
+    pwm.init_pwm();
 }
 
 void loop()

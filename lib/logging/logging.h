@@ -30,7 +30,7 @@ extern Stream * NodeBackpack;
 #if defined(PLATFORM_ESP32_S3)
 #define LOGGING_UART (* NodeBackpack)
 #else
-#define LOGGING_UART (*TxBackpack)
+#define LOGGING_UART (*NodeBackpack)
 #endif
 #else
 extern Stream *SerialLogger;
