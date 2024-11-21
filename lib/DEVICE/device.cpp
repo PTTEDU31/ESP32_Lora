@@ -162,7 +162,7 @@ static int _devicesUpdate(unsigned long now)
             }
         }
     }
-    DBGLN("%d",smallest_delay);
+    // DBGLN("%d",smallest_delay);
     return smallest_delay;
 }
 

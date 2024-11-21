@@ -507,7 +507,6 @@ static int start()
 static int timeout()
 {
     digitalWrite(GPIO_PIN_LED_WS2812,!(digitalRead(GPIO_PIN_LED_WS2812)));
-    Serial.println("Blink");
     return 500;
 }
 device_t RGB_device = {

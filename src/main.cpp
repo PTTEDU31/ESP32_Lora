@@ -4,6 +4,7 @@
 #include "devWIFI.h"
 device_affinity_t devices[] = {
     {&RGB_device, 1},
+    {&WIFI_device,1}
 };
 
 Stream *NodeUSB;
