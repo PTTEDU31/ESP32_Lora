@@ -162,10 +162,7 @@ static int _devicesUpdate(unsigned long now)
             }
         }
     }
-<<<<<<< Updated upstream
     // DBGLN("%d",smallest_delay);
-=======
->>>>>>> Stashed changes
     return smallest_delay;
 }
 

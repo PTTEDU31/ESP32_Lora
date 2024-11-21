@@ -147,6 +147,9 @@ static const struct
     {HARDWARE_GPRS_baud, "GPRS_baud", INT}, // Tốc độ baud của GPRS
     {HARDWARE_GPRS_rx, "GPRS_rx", INT},     // Chân RX của GPRS
     {HARDWARE_GPRS_tx, "GPRS_tx", INT},     // Chân TX của GPRS
+    {HARDWARE_i2s_scl, "i2s_scl", INT},
+    {HARDWARE_i2s_sda, "i2s_sda", INT},
+    {HARDWARE_i2s_latch, "i2s_latch", INT}
 
 };
 

@@ -21,6 +21,13 @@
 #define GPIO_PIN_GPRS_RX hardware_pin(HARDWARE_GPRS_rx)
 #define GPIO_PIN_GPRS_TX hardware_pin(HARDWARE_GPRS_tx)
 
+// VBat
+#define USE_ANALOG_VBAT
+#define GPIO_ANALOG_VBAT hardware_pin(HARDWARE_vbat)
+#define ANALOG_VBAT_OFFSET hardware_int(HARDWARE_vbat_offset)
+#define ANALOG_VBAT_SCALE hardware_int(HARDWARE_vbat_scale)
+
+
 // #define GPIO_PIN_DEBUG_RX hardware_pin(HARDWARE_debug_backpack_rx)
 // #define GPIO_PIN_DEBUG_TX hardware_pin(HARDWARE_debug_backpack_tx)
 // #define GPIO_PIN_BACKPACK_BOOT hardware_pin(HARDWARE_backpack_boot)
@@ -157,10 +164,13 @@
 #define PASSTHROUGH_BAUD hardware_int(HARDWARE_passthrough_baud)
 
 // I2C
-#define USE_I2C
 #define GPIO_PIN_SCL hardware_pin(HARDWARE_i2c_scl)
 #define GPIO_PIN_SDA hardware_pin(HARDWARE_i2c_sda)
 
+// I2S
+#define GPIO_PIN_I2S_SCL hardware_pin(HARDWARE_i2s_scl)
+#define GPIO_PIN_I2S_SDA hardware_pin(HARDWARE_i2s_sda)
+#define GPIO_PIN_I2S_LATCH hardware_pin(HARDWARE_i2s_latch)
 // Misc sensors & things
 #define GPIO_PIN_GSENSOR_INT hardware_pin(HARDWARE_misc_gsensor_int)
 // #define GPIO_PIN_BUZZER hardware_pin(HARDWARE_misc_buzzer)  // stm32 only

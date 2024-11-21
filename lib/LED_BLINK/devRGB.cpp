@@ -504,6 +504,7 @@ static int start()
     }
     return DURATION_IMMEDIATELY;
 }
+#include "fastio.h"
 static int timeout()
 {
     digitalWrite(GPIO_PIN_LED_WS2812,!(digitalRead(GPIO_PIN_LED_WS2812)));

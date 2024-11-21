@@ -306,3 +306,24 @@ extern bool pwmSerialDefined;
 #endif
 #include "hardware.h"
 #endif
+
+#if defined(GPIO_PIN_I2S_SDA) && defined(GPIO_PIN_I2S_SCL) && defined(GPIO_PIN_I2S_LATCH)
+#define USE_I2S
+#else
+#define GPIO_PIN_I2S_SDA UNDEF_PIN
+#define GPIO_PIN_I2S_SCL UNDEF_PIN
+#define GPIO_PIN_I2S_LATCH UNDEF_PIN
+#endif
+// #define I2S_WS                              26
+// #define I2S_BCK                             25
+// #define I2S_DATA                            27
+
+#define RELAY_1                              129
+#define RELAY_2                              130
+
+#define OUTPUT_1                             131
+#define OUTPUT_2                             132
+#define OUTPUT_3                             133
+#define OUTPUT_4                             134
+#define OUTPUT_5                             135
+#define OUTPUT_6                             136
