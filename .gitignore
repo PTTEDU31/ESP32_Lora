@@ -9,3 +9,4 @@
 *.pyc
 *.pyo
 python/__pycache__/lora_helpers.cpython-311.pyc
+include/WebContent.h

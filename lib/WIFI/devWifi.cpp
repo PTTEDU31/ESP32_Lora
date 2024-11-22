@@ -25,6 +25,8 @@
 #else
 #include <SPIFFS.h>
 #endif
+#include <set>
+#include <StreamString.h>
 
 #include "WebContent.h"
 
@@ -51,22 +53,23 @@ static uint32_t lastScanTimeMS = 0;
 
 static bool force_update = false;
 
-static struct {
+static struct
+{
   const char *url;
   const char *contentType;
-  const uint8_t* content;
+  const uint8_t *content;
   const size_t size;
 } files[] = {
-  {"/scan.js", "text/javascript", (uint8_t *)SCAN_JS, sizeof(SCAN_JS)},
-  {"/mui.js", "text/javascript", (uint8_t *)MUI_JS, sizeof(MUI_JS)},
-  {"/elrs.css", "text/css", (uint8_t *)ELRS_CSS, sizeof(ELRS_CSS)},
-  {"/hardware.html", "text/html", (uint8_t *)HARDWARE_HTML, sizeof(HARDWARE_HTML)},
-  {"/hardware.js", "text/javascript", (uint8_t *)HARDWARE_JS, sizeof(HARDWARE_JS)},
-  {"/cw.html", "text/html", (uint8_t *)CW_HTML, sizeof(CW_HTML)},
-  {"/cw.js", "text/javascript", (uint8_t *)CW_JS, sizeof(CW_JS)},
+    {"/scan.js", "text/javascript", (uint8_t *)SCAN_JS, sizeof(SCAN_JS)},
+    {"/mui.js", "text/javascript", (uint8_t *)MUI_JS, sizeof(MUI_JS)},
+    {"/elrs.css", "text/css", (uint8_t *)ELRS_CSS, sizeof(ELRS_CSS)},
+    {"/hardware.html", "text/html", (uint8_t *)HARDWARE_HTML, sizeof(HARDWARE_HTML)},
+    {"/hardware.js", "text/javascript", (uint8_t *)HARDWARE_JS, sizeof(HARDWARE_JS)},
+    {"/cw.html", "text/html", (uint8_t *)CW_HTML, sizeof(CW_HTML)},
+    {"/cw.js", "text/javascript", (uint8_t *)CW_JS, sizeof(CW_JS)},
 #if defined(RADIO_LR1121)
-  {"/lr1121.html", "text/html", (uint8_t *)LR1121_HTML, sizeof(LR1121_HTML)},
-  {"/lr1121.js", "text/javascript", (uint8_t *)LR1121_JS, sizeof(LR1121_JS)},
+    {"/lr1121.html", "text/html", (uint8_t *)LR1121_HTML, sizeof(LR1121_HTML)},
+    {"/lr1121.js", "text/javascript", (uint8_t *)LR1121_JS, sizeof(LR1121_JS)},
 #endif
 };
 
@@ -208,6 +211,83 @@ static void WebUpdateHandleNotFound(AsyncWebServerRequest *request)
   response->addHeader("Expires", "-1");
   request->send(response);
 }
+static void WebUpdateSendNetworks(AsyncWebServerRequest *request)
+{
+  int numNetworks = WiFi.scanComplete();
+  if (numNetworks >= 0 && millis() - lastScanTimeMS < STALE_WIFI_SCAN)
+  {
+    DBGLN("Found %d networks", numNetworks);
+    std::set<String> vs;
+    String s = "[";
+    for (int i = 0; i < numNetworks; i++)
+    {
+      String w = WiFi.SSID(i);
+      DBGLN("found %s", w.c_str());
+      if (vs.find(w) == vs.end() && w.length() > 0)
+      {
+        if (!vs.empty())
+          s += ",";
+        s += "\"" + w + "\"";
+        vs.insert(w);
+      }
+    }
+    s += "]";
+    request->send(200, "application/json", s);
+  }
+  else
+  {
+    if (WiFi.scanComplete() != WIFI_SCAN_RUNNING)
+    {
+#if defined(PLATFORM_ESP8266)
+      scanComplete = false;
+      WiFi.scanNetworksAsync([](int)
+                             { scanComplete = true; });
+#else
+      WiFi.scanNetworks(true);
+#endif
+      lastScanTimeMS = millis();
+    }
+    request->send(204, "application/json", "[]");
+  }
+}
+static void sendResponse(AsyncWebServerRequest *request, const String &msg, WiFiMode_t mode)
+{
+  AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", msg);
+  response->addHeader("Connection", "close");
+  request->send(response);
+  request->client()->close();
+  changeTime = millis();
+  changeMode = mode;
+}
+static void WebUpdateAccessPoint(AsyncWebServerRequest *request)
+{
+  DBGLN("Starting Access Point");
+  String msg = String("Access Point starting, please connect to access point '") + wifi_ap_ssid + "' with password '" + wifi_ap_password + "'";
+  sendResponse(request, msg, WIFI_AP);
+}
+
+static void WebUpdateConnect(AsyncWebServerRequest *request)
+{
+  DBGLN("Connecting to network");
+  String msg = String("Connecting to network '") + station_ssid + "', connect to http://" +
+               wifi_hostname + ".local from a browser on that network";
+  sendResponse(request, msg, WIFI_STA);
+}
+static void WebUpdateSetHome(AsyncWebServerRequest *request)
+{
+  String ssid = request->arg("network");
+  String password = request->arg("password");
+
+  DBGLN("Setting network %s", ssid.c_str());
+  strcpy(station_ssid, ssid.c_str());
+  strcpy(station_password, password.c_str());
+  if (request->hasArg("save")) {
+    strlcpy(firmwareOptions.home_wifi_ssid, ssid.c_str(), sizeof(firmwareOptions.home_wifi_ssid));
+    strlcpy(firmwareOptions.home_wifi_password, password.c_str(), sizeof(firmwareOptions.home_wifi_password));
+    saveOptions();
+  }
+  WebUpdateConnect(request);
+}
 
 static void WebUpdateHandleRoot(AsyncWebServerRequest *request)
 {
@@ -255,6 +335,8 @@ static void startServices()
   server.on("/elrs.css", WebUpdateSendContent);
   server.on("/mui.js", WebUpdateSendContent);
   server.on("/scan.js", WebUpdateSendContent);
+  server.on("/networks.json", WebUpdateSendNetworks);
+  server.on("/sethome", WebUpdateSetHome);
   server.onNotFound(WebUpdateHandleNotFound);
   server.begin();
   servicesStarted = true;

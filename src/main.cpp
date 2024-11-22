@@ -17,7 +17,7 @@ Stream *NodeBackpack;
 
 #if defined(PLATFORM_ESP32_S3)
 #include "USB.h"
-#define USBSerial Serial
+// #define USBSerial Serial
 #endif
 
 void setupSerial()
