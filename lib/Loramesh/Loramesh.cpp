@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "targets.h"
+#include "LorameshMessage.h"
 #include "devLoramesh.h"
 static const char *LMS_TAG = "LoRaMeshService";
 
@@ -11,19 +12,19 @@ void LoRaMeshService::loopReceivedPackets() {
         ESP_LOGV(LMS_TAG, "Heap size receive: %d", ESP.getFreeHeap());
 
         // //Get the first element inside the Received User Packets FiFo
-        // AppPacket<LoRaMeshMessage>* packet = radio.getNextAppPacket<LoRaMeshMessage>();
+        AppPacket<LoRaMeshMessage>* packet = radio.getNextAppPacket<LoRaMeshMessage>();
 
         // //Create a DataMessage from the received packet
         // DataMessage* message = createDataMessage(packet);
 
-        //Process the packet
+        // //Process the packet
         // MessageManager::getInstance().processReceivedMessage(LoRaMeshPort, message);
 
-        //Delete the message
+        // //Delete the message
         // vPortFree(message);
 
-        //Delete the packet when used. It is very important to call this function to release the memory of the packet.
-        // radio.deletePacket(packet);
+        // Delete the packet when used. It is very important to call this function to release the memory of the packet.
+        radio.deletePacket(packet);
         ESP_LOGV(LMS_TAG, "Heap size receive2: %d", ESP.getFreeHeap());
     }
 }
@@ -71,7 +72,7 @@ void LoRaMeshService::initLoraMeshService()
     config.module = LoraMesher::LoraModules::SX1278_MOD;
 #endif
 
-    SPI.begin(GPIO_PIN_NSS, GPIO_PIN_MISO, GPIO_PIN_MOSI, -1);
+    SPI.begin(GPIO_PIN_SCK, GPIO_PIN_MISO, GPIO_PIN_MOSI, GPIO_PIN_NSS);
     config.spi = &SPI;
     ESP_LOGV(LMS_TAG, "LoraMesher config: Module: %d", config.module);
     ESP_LOGV(LMS_TAG, "LoraMesher config: LORA_SCK: %d, LORA_MISO: %d, LORA_MOSI: %d, LORA_CS: %d", GPIO_PIN_SCK, GPIO_PIN_MISO, GPIO_PIN_MOSI, GPIO_PIN_NSS);

@@ -1,11 +1,5 @@
 #pragma once
-
-#include <Arduino.h>
-
-#include <ArduinoJson.h>
-
-
-#pragma pack(1)
+#include "ArduinoJson.h"
 
 //Message Ports
 enum messagePort: uint8_t {
@@ -74,5 +68,3 @@ class DataMessage: public DataMessageGeneric {
 public:
     uint8_t message[];
 };
-
-#pragma pack()

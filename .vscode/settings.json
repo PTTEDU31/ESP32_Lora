@@ -7,6 +7,7 @@
         "cstdlib": "cpp",
         "*.tcc": "cpp",
         "ostream": "cpp",
-        "compare": "cpp"
+        "compare": "cpp",
+        "typeinfo": "cpp"
     }
 }

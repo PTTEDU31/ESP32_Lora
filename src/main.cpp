@@ -3,6 +3,7 @@
 #include "devLED.h"
 #include "devWIFI.h"
 #include "PWM.h"
+
 device_affinity_t devices[] = {
     {&RGB_device, 1},
     {&WIFI_device,1}
@@ -15,9 +16,17 @@ Stream *NodeBackpack;
  * Setup GPIOs or other hardware, config not yet loaded
  ***/
 
+#include "devLoramesh.h"
+LoRaMeshService& loraMeshService = LoRaMeshService::getInstance();
+
+void initLoRaMesher() {
+    //Init LoRaMesher
+    loraMeshService.initLoraMeshService();
+}
+
 #if defined(PLATFORM_ESP32_S3)
 #include "USB.h"
-// #define USBSerial Serial
+#define USBSerial Serial
 #endif
 
 void setupSerial()
@@ -111,6 +120,7 @@ void setup()
         connectionState = wifiUpdate;
     }
     pwm.init_pwm();
+    initLoRaMesher();
 }
 
 void loop()
