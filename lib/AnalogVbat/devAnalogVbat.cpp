@@ -118,6 +118,7 @@ device_t AnalogVbat_device = {
     .start = start,
     .event = nullptr,
     .timeout = timeout,
+    .id = deviceId::nodev,
 };
 
 #endif /* if USE_ANALOG_VCC */

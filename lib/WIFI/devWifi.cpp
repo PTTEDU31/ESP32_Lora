@@ -442,6 +442,8 @@ device_t WIFI_device = {
     .initialize = initialize,
     .start = start,
     .event = event,
-    .timeout = timeout};
+    .timeout = timeout,
+    .id=deviceId::WiFi,
+    };
 
 #endif // Kết thúc kiểm tra PLATFORM_ESP8266 || PLATFORM_ESP32

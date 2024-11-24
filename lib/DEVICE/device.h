@@ -1,40 +1,44 @@
 #pragma once
 
 #include <stdint.h>
-
+#include "DEVICE_ID.h"
 // duration constants which can be returned from start(), event() or timeout()
-#define DURATION_IGNORE -2      // when returned from event() does not update the current timeout
-#define DURATION_NEVER -1       // timeout() will not be called, only event()
-#define DURATION_IMMEDIATELY 0  // timeout() will be called each loop
+#define DURATION_IGNORE -2     // when returned from event() does not update the current timeout
+#define DURATION_NEVER -1      // timeout() will not be called, only event()
+#define DURATION_IMMEDIATELY 0 // timeout() will be called each loop
 
-typedef struct {
-    /**
-     * @brief Called at the beginning of setup() so the device can configure IO pins etc.
-     */
-    void (*initialize)();
+typedef struct
+{
+  /**
+   * @brief Called at the beginning of setup() so the device can configure IO pins etc.
+   */
+  void (*initialize)();
 
-    /**
-     * @brief called at the end of setup() and returns the number of milliseconds when
-     * to call timeout() function.
-     */
-    int (*start)();
+  /**
+   * @brief called at the end of setup() and returns the number of milliseconds when
+   * to call timeout() function.
+   */
+  int (*start)();
 
-    /**
-     * @brief An event was fired in the main code, perform any requierd action that this
-     * device requires and return new duration for timeout() call.
-     * If DURATION_IGNORE is returned, then the current timeout value kept and timeout()
-     * will be called when it expires.
-     */
-    int (*event)();
+  /**
+   * @brief An event was fired in the main code, perform any requierd action that this
+   * device requires and return new duration for timeout() call.
+   * If DURATION_IGNORE is returned, then the current timeout value kept and timeout()
+   * will be called when it expires.
+   */
+  int (*event)();
 
-    /**
-     * @brief The current timeout duration has expired so take appropriate action and return
-     * a new duration, this function should not return DURATION_IGNORE.
-     */
-    int (*timeout)();
+  /**
+   * @brief The current timeout duration has expired so take appropriate action and return
+   * a new duration, this function should not return DURATION_IGNORE.
+   */
+  int (*timeout)();
+
+  deviceId id = deviceId::nodev;
 } device_t;
 
-typedef struct {
+typedef struct
+{
   /**
    * @brief pointer to the device handler functions
    */

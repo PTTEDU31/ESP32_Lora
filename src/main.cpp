@@ -16,12 +16,12 @@ Stream *NodeBackpack;
  * Setup GPIOs or other hardware, config not yet loaded
  ***/
 
-#include "devLoramesh.h"
+#include "loraMeshService.h"
 LoRaMeshService& loraMeshService = LoRaMeshService::getInstance();
 
 void initLoRaMesher() {
     //Init LoRaMesher
-    loraMeshService.initLoraMeshService();
+    loraMeshService.initLoraMesherService();
 }
 
 #if defined(PLATFORM_ESP32_S3)
