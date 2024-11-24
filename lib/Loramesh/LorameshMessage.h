@@ -1,11 +1,4 @@
-#pragma once
-
-#include <Arduino.h>
-
-#include <../MESSAGE/dataMessage.h>
-
-#include "LoraMesher.h"
-
+#include "MESSAGE.h"
 
 enum LoRaMeshMessageType: uint8_t {
     sendMessage = 1,
