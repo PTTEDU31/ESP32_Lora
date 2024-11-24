@@ -17,6 +17,7 @@
         "vector": "cpp",
         "initializer_list": "cpp",
         "span": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "cstdint": "cpp"
     }
 }

@@ -1,13 +1,22 @@
-#include "logging.h"
-enum messagePort: uint8_t {
+#pragma once
+
+#include <Arduino.h>
+#include <ArduinoJson.h>
+#include <vector>
+
+#pragma pack(1)
+
+// Message Ports
+enum class messagePort : uint8_t {
     LoRaMeshPort = 1,
     BluetoothPort = 2,
     WiFiPort = 3,
     MqttPort = 4,
     InternalPort = 5,
-    Rs485Port = 6
 };
-enum appPort: uint8_t {
+
+// Application Ports
+enum class appPort : uint8_t {
     LoRaChat = 1,
     BluetoothApp = 2,
     WiFiApp = 3,
@@ -24,6 +33,18 @@ enum appPort: uint8_t {
     DisplayApp = 17,
 };
 
+// Helper Functions for ArduinoJson and Enum
+template <typename T>
+T fromJson(JsonVariantConst value) {
+    return static_cast<T>(value.as<uint8_t>());
+}
+
+template <typename T>
+void toJson(T value, JsonVariant& json) {
+    json = static_cast<uint8_t>(value);
+}
+
+// Base class
 class DataMessageGeneric {
 public:
     appPort appPortDst;
@@ -33,14 +54,61 @@ public:
     uint16_t addrSrc;
     uint16_t addrDst;
 
-    uint32_t messageSize; //Message Size of the payload no include header
+    uint32_t messageSize; // Message Size of the payload (excluding header)
 
-    void deserialize(JsonObject &doc);
-    void serialize(JsonObject &doc);
-    uint32_t getDataMessageSize();
+    // Calculate total size
+    uint32_t getDataMessageSize() const {
+        return sizeof(DataMessageGeneric) + messageSize;
+    }
+
+    // Serialize to JSON
+    void serialize(JsonObject& doc) const {
+        // toJson(appPortDst, doc["appPortDst"]);
+        // toJson(appPortSrc, doc["appPortSrc"]);
+        doc["messageId"] = messageId;
+        doc["addrSrc"] = addrSrc;
+        doc["addrDst"] = addrDst;
+        doc["messageSize"] = messageSize;
+    }
+
+    // Deserialize from JSON
+    void deserialize(JsonObject& doc) {
+        appPortDst = fromJson<appPort>(doc["appPortDst"]);
+        appPortSrc = fromJson<appPort>(doc["appPortSrc"]);
+        messageId = doc["messageId"].as<uint8_t>();
+        addrSrc = doc["addrSrc"].as<uint16_t>();
+        addrDst = doc["addrDst"].as<uint16_t>();
+        messageSize = doc["messageSize"].as<uint32_t>();
+    }
 };
 
-class DataMessage: public DataMessageGeneric {
+// Derived class for payload
+class DataMessage : public DataMessageGeneric {
 public:
-    uint8_t message[];
+    std::vector<uint8_t> message; // Use std::vector for dynamic array
+
+    DataMessage(uint32_t size) : message(size) {
+        messageSize = size;
+    }
+
+    // Serialize the message content
+    void serialize(JsonObject& doc) const {
+        DataMessageGeneric::serialize(doc); // Serialize base class members
+        JsonArray dataArray = doc.createNestedArray("message");
+        for (auto byte : message) {
+            dataArray.add(byte);
+        }
+    }
+
+    // Deserialize the message content
+    void deserialize(JsonObject& doc) {
+        DataMessageGeneric::deserialize(doc); // Deserialize base class members
+        JsonArray dataArray = doc["message"];
+        message.clear();
+        for (auto value : dataArray) {
+            message.push_back(value.as<uint8_t>());
+        }
+    }
 };
+
+#pragma pack()
