@@ -3,6 +3,14 @@
 #include "devLED.h"
 #include "devWIFI.h"
 #include "PWM.h"
+//Manager
+#include "message/messageManager.h"
+
+//LoRaMesh
+#include "loramesh/loraMeshService.h"
+
+
+static const char* TAG = "Main";
 
 device_affinity_t devices[] = {
     {&RGB_device, 1},
@@ -15,14 +23,29 @@ Stream *NodeBackpack;
  * Target-specific initialization code called early in setup()
  * Setup GPIOs or other hardware, config not yet loaded
  ***/
+#pragma region LoRaMesher
 
-#include "loraMeshService.h"
 LoRaMeshService& loraMeshService = LoRaMeshService::getInstance();
 
 void initLoRaMesher() {
     //Init LoRaMesher
     loraMeshService.initLoraMesherService();
 }
+
+#pragma endregion
+
+#pragma region Manager
+
+MessageManager& manager = MessageManager::getInstance();
+
+void initManager() {
+    manager.init();
+    ESP_LOGV(TAG, "Manager initialized");
+    manager.addMessageService(&loraMeshService);
+    ESP_LOGV(TAG, "LoRaMesher service added to manager");
+
+}
+#pragma endregion
 
 #if defined(PLATFORM_ESP32_S3)
 #include "USB.h"
@@ -120,7 +143,15 @@ void setup()
         connectionState = wifiUpdate;
     }
     pwm.init_pwm();
+        // Initialize Manager
+    initManager();
+
+    ESP_LOGV(TAG, "Heap after initManager: %d", ESP.getFreeHeap());
+
+        // Initialize LoRaMesh
     initLoRaMesher();
+    ESP_LOGV(TAG, "Heap after initLoRaMesher: %d", ESP.getFreeHeap());
+
 }
 
 void loop()

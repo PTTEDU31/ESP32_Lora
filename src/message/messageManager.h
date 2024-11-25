@@ -8,7 +8,7 @@
 
 #include "messageService.h"
 
-#include "loraMeshService.h"
+#include "loramesh/loraMeshService.h"
 
 // #include "mqtt/mqttService.h"
 

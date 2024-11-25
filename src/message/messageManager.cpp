@@ -142,7 +142,7 @@ void MessageManager::processReceivedMessage(messagePort port, DataMessage* messa
 
     for (auto service : services) {
         if (service->serviceId == message->appPortDst) {
-            service-> (port, message);
+            service->processReceivedMessage(port, message);
         }
     }
 }
@@ -152,18 +152,18 @@ void MessageManager::sendMessage(messagePort port, DataMessage* message) {
         case LoRaMeshPort:
             sendMessageLoRaMesher(message);
             break;
-        // case BluetoothPort:
-        //     sendMessageBluetooth(message);
-        //     break;
-        // case WiFiPort:
-        //     sendMessageWiFi(message);
-        //     break;
-        // case MqttPort:
-        //     sendMessageMqtt(message);
-        //     break;
-        // case InternalPort:
-        //     processReceivedMessage(InternalPort, message);
-        //     break;
+        case BluetoothPort:
+            sendMessageBluetooth(message);
+            break;
+        case WiFiPort:
+            sendMessageWiFi(message);
+            break;
+        case MqttPort:
+            sendMessageMqtt(message);
+            break;
+        case InternalPort:
+            processReceivedMessage(InternalPort, message);
+            break;
         default:
             break;
     }
@@ -174,32 +174,32 @@ void MessageManager::sendMessageLoRaMesher(DataMessage* message) {
     mesher.send(message);
 }
 
-//     MqttService& mqtt = MqttService::getInstance();
-// void MessageManager::sendMessageMqtt(DataMessage* message) {
-//     if (mqtt.isInitialized() && mqtt.writeToMqtt(message)) {
-//         ESP_LOGI(MANAGER_TAG, "Message sent to MQTT");
-//         return;
-//     }
+void MessageManager::sendMessageMqtt(DataMessage* message) {
+    // MqttService& mqtt = MqttService::getInstance();
+    // if (mqtt.isInitialized() && mqtt.writeToMqtt(message)) {
+    //     ESP_LOGI(MANAGER_TAG, "Message sent to MQTT");
+    //     return;
+    // }
 
-//     LoRaMeshService& mesher = LoRaMeshService::getInstance();
-//     mesher.sendClosestGateway(message);
-// }
+    LoRaMeshService& mesher = LoRaMeshService::getInstance();
+    mesher.sendClosestGateway(message);
+}
 
-// void MessageManager::sendMessageWiFi(DataMessage* message) {
-//     WiFiServerService& wifi = WiFiServerService::getInstance();
-//     // if (wifi.processReceivedMessage(message) {
-//     //     ESP_LOGI(MANAGER_TAG,"Message sent to WiFi");
-//     //     return;
-//     // }
+void MessageManager::sendMessageWiFi(DataMessage* message) {
+    // WiFiServerService& wifi = WiFiServerService::getInstance();
+    // if (wifi.processReceivedMessage(message) {
+    //     ESP_LOGI(MANAGER_TAG,"Message sent to WiFi");
+    //     return;
+    // }
 
-//     if (wifi.isConnected()) {
-//         ESP_LOGE(MANAGER_TAG, "Error sending message to WiFi");
-//         //TODO: Retry adding it into a queue and send it later or send to closest gateway 
-//         return;
-//     }
-//     else
-//         ESP_LOGE(MANAGER_TAG, "WiFi not connected");
+    // if (wifi.isConnected()) {
+    //     ESP_LOGE(MANAGER_TAG, "Error sending message to WiFi");
+    //     //TODO: Retry adding it into a queue and send it later or send to closest gateway 
+    //     return;
+    // }
+    // else
+        ESP_LOGE(MANAGER_TAG, "WiFi not connected");
 
-//     LoRaMeshService& mesher = LoRaMeshService::getInstance();
-//     mesher.sendClosestGateway(message);
-// }
+    LoRaMeshService& mesher = LoRaMeshService::getInstance();
+    mesher.sendClosestGateway(message);
+}

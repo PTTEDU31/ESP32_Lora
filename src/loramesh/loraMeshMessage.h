@@ -2,7 +2,11 @@
 
 #include <Arduino.h>
 
-#include "dataMessage.h"
+#include "message/dataMessage.h"
+
+#include "LoraMesher.h"
+
+#pragma pack(1)
 
 enum LoRaMeshMessageType: uint8_t {
     sendMessage = 1,
@@ -16,6 +20,7 @@ public:
     uint8_t messageId;
     uint8_t dataMessage[];
 };
+#pragma pack()
 
 
 

@@ -18,6 +18,7 @@
         "initializer_list": "cpp",
         "span": "cpp",
         "regex": "cpp",
-        "cstdint": "cpp"
+        "cstdint": "cpp",
+        "*.inc": "cpp"
     }
 }

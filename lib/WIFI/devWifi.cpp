@@ -15,7 +15,7 @@
 #endif
 #include "ESPAsyncWebServer.h"
 
-#include "hwTimer.h"
+// #include "hwTimer.h"
 #include "logging.h"
 #include "options.h"
 #include "helpers.h"
@@ -298,14 +298,14 @@ static void WebUpdateHandleRoot(AsyncWebServerRequest *request)
   force_update = request->hasArg("force");
   AsyncWebServerResponse *response;
   response = request->beginResponse_P(200, "text/html", (uint8_t *)INDEX_HTML, sizeof(INDEX_HTML));
-  // if (connectionState == hardwareUndefined)
-  // {
-  //   response = request->beginResponse_P(200, "text/html", (uint8_t *)HARDWARE_HTML, sizeof(HARDWARE_HTML));
-  // }
-  // else
-  // {
-  //   response = request->beginResponse_P(200, "text/html", (uint8_t *)INDEX_HTML, sizeof(INDEX_HTML));
-  // }
+  if (connectionState == hardwareUndefined)
+  {
+    response = request->beginResponse_P(200, "text/html", (uint8_t *)HARDWARE_HTML, sizeof(HARDWARE_HTML));
+  }
+  else
+  {
+    response = request->beginResponse_P(200, "text/html", (uint8_t *)INDEX_HTML, sizeof(INDEX_HTML));
+  }
   response->addHeader("Content-Encoding", "gzip");
   response->addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   response->addHeader("Pragma", "no-cache");

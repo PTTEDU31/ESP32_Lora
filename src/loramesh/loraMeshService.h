@@ -2,13 +2,15 @@
 
 #include <Arduino.h>
 
+#include "config.h"
+
 #include "LoraMesher.h"
 
 #include "loraMeshMessage.h"
 
-#include "messageManager.h"
+#include "message/messageManager.h"
 
-#include "messageService.h"
+#include "message/messageService.h"
 
 #include "loraMeshCommandService.h"
 

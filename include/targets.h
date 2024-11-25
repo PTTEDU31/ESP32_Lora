@@ -4,7 +4,7 @@
 #endif
 
 #define UNDEF_PIN (-1)
-#define LORA_ENABLE
+#define LORA_ENABLE 1
 /// General Features ///
 #define LED_MAX_BRIGHTNESS 50 //0..255 for max led brightness
 

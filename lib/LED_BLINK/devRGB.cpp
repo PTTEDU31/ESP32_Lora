@@ -515,7 +515,7 @@ device_t RGB_device = {
     .start = start,
     .event = timeout,
     .timeout = timeout,
-    .id        = deviceId::nodev;
+    .id        = deviceId::nodev,
     };
 
 #endif
