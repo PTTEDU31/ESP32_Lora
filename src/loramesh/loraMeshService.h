@@ -10,7 +10,7 @@
 
 #include "message/messageManager.h"
 
-#include "message/messageService.h"
+#include "messageService.h"
 
 #include "loraMeshCommandService.h"
 

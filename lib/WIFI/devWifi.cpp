@@ -30,6 +30,7 @@
 
 #include "WebContent.h"
 
+#include "Wifi_Service.h"
 static char station_ssid[33];
 static char station_password[65];
 
@@ -437,6 +438,13 @@ static int timeout()
   return DURATION_NEVER;
 }
 
+bool Wifi_Service::isConnected(){
+   wl_status_t status = WiFi.status();
+  if (status == WL_CONNECTED && wifiMode == WIFI_STA  )
+    return true;
+  else
+    return false;
+}
 // Khai báo device_t cho Wi-Fi
 device_t WIFI_device = {
     .initialize = initialize,

@@ -13,5 +13,6 @@
 // #include "OTA.h"
 // #include "POWERMGNT.h"
 // #include "deferred.h"
+#include "dataMessage.h"
 
 void setupTargetCommon();

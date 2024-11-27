@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-#include "message/dataMessage.h"
+#include "dataMessage.h"
 
 #include "LoraMesher.h"
 
