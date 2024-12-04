@@ -119,3 +119,16 @@
 
 # Use an ELRS TX and RX as a transparent UART over the air
 #-DUSE_AIRPORT_AT_BAUD=9600
+
+# MQTT configuration
+-DMQTT_SERVER="192.168.1.26" 
+-DMQTT_PORT=1883
+-DMQTT_USERNAME="admin"
+-DMQTT_PASSWORD="public"
+-DMQTT_TOPIC_SUB="from-server/"
+-DMQTT_TOPIC_OUT="to-server/"
+-DMQTT_MAX_PACKET_SIZE=512 
+# 128, 256 or 512
+-DMQTT_MAX_QUEUE_SIZE=10
+-DMQTT_STILL_CONNECTED_INTERVAL=300000 
+# In milliseconds, 0 to disable

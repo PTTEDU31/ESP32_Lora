@@ -124,35 +124,22 @@
 #define WS2812_BOOT_LEDS hardware_i16_array(HARDWARE_ledidx_rgb_boot)
 #define WS2812_BOOT_LEDS_COUNT hardware_int(HARDWARE_ledidx_rgb_boot_count)
 
-// OLED
-#define GPIO_PIN_OLED_CS hardware_pin(HARDWARE_screen_cs)        // SPI
-#define GPIO_PIN_OLED_DC hardware_pin(HARDWARE_screen_dc)        // SPI
-#define GPIO_PIN_OLED_MOSI hardware_pin(HARDWARE_screen_mosi)    // SPI
-#define GPIO_PIN_OLED_RST hardware_pin(HARDWARE_screen_rst)      // SPI & I2c (optional)
-#define GPIO_PIN_OLED_SCK hardware_pin(HARDWARE_screen_sck)      // clock for SPI & I2C
-#define GPIO_PIN_OLED_SDA hardware_pin(HARDWARE_screen_sda)      // I2C data
 
-// screen_type == 0 is no oled
-#define USE_OLED_I2C
-#define OPT_USE_OLED_I2C (hardware_int(HARDWARE_screen_type)==1)
-#define USE_OLED_SPI
-#define OPT_USE_OLED_SPI (hardware_int(HARDWARE_screen_type)==2)
-#define USE_OLED_SPI_SMALL
-#define OPT_USE_OLED_SPI_SMALL (hardware_int(HARDWARE_screen_type)==3)
-#define OLED_REVERSED
-#define OPT_OLED_REVERSED hardware_flag(HARDWARE_screen_reversed)
-
-// TFT
-#define HAS_TFT_SCREEN
+// OLED/TFT
+#define OPT_HAS_SCREEN (hardware_int(HARDWARE_screen_type) > 0)
+#define OPT_HAS_OLED_I2C (hardware_int(HARDWARE_screen_type)==1)
+#define OPT_HAS_OLED_SPI (hardware_int(HARDWARE_screen_type)==2)
+#define OPT_HAS_OLED_SPI_SMALL (hardware_int(HARDWARE_screen_type)==3)
 #define OPT_HAS_TFT_SCREEN (hardware_int(HARDWARE_screen_type)==4)
 
-#define GPIO_PIN_TFT_BL hardware_pin(HARDWARE_screen_bl)
-#define GPIO_PIN_TFT_CS hardware_pin(HARDWARE_screen_cs)
-#define GPIO_PIN_TFT_DC hardware_pin(HARDWARE_screen_dc)
-#define GPIO_PIN_TFT_MOSI hardware_pin(HARDWARE_screen_mosi)
-#define GPIO_PIN_TFT_RST hardware_pin(HARDWARE_screen_rst)
-#define GPIO_PIN_TFT_SCLK hardware_pin(HARDWARE_screen_sck)
-
+#define GPIO_PIN_SCREEN_CS hardware_pin(HARDWARE_screen_cs)         // SPI
+#define GPIO_PIN_SCREEN_DC hardware_pin(HARDWARE_screen_dc)         // SPI
+#define GPIO_PIN_SCREEN_MOSI hardware_pin(HARDWARE_screen_mosi)     // SPI
+#define GPIO_PIN_SCREEN_RST hardware_pin(HARDWARE_screen_rst)       // SPI & I2c (optional)
+#define GPIO_PIN_SCREEN_SCK hardware_pin(HARDWARE_screen_sck)       // clock for SPI & I2C
+#define GPIO_PIN_SCREEN_SDA hardware_pin(HARDWARE_screen_sda)       // I2C data
+#define GPIO_PIN_SCREEN_BL hardware_pin(HARDWARE_screen_bl)         // Backlight
+#define OPT_SCREEN_REVERSED hardware_flag(HARDWARE_screen_reversed)
 // Backpack
 #define USE_TX_BACKPACK
 #define OPT_USE_TX_BACKPACK hardware_flag(HARDWARE_use_backpack)

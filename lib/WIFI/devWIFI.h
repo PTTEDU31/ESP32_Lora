@@ -6,5 +6,3 @@
 
 extern device_t WIFI_device;
 #define HAS_WIFI
-
-#include "Wifi_Service.h"

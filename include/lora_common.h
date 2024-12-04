@@ -13,6 +13,7 @@
 // #include "OTA.h"
 // #include "POWERMGNT.h"
 // #include "deferred.h"
+#include "LoraMesher.h"
 #include "dataMessage.h"
 
 void setupTargetCommon();

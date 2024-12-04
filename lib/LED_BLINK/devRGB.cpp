@@ -491,7 +491,7 @@
 //     .event = timeout,
 //     .timeout = timeout
 // };
-#define GPIO_PIN_LED_WS2812 10
+
 static void initialize()
 {
     pinMode(GPIO_PIN_LED_WS2812, OUTPUT);

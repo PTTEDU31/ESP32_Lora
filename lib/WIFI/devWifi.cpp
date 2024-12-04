@@ -29,8 +29,7 @@
 #include <StreamString.h>
 
 #include "WebContent.h"
-
-#include "Wifi_Service.h"
+#include "LoraMesher.h"
 static char station_ssid[33];
 static char station_password[65];
 
@@ -53,7 +52,7 @@ static constexpr uint32_t STALE_WIFI_SCAN = 20000;
 static uint32_t lastScanTimeMS = 0;
 
 static bool force_update = false;
-
+extern unsigned long rebootTime;
 static struct
 {
   const char *url;
@@ -212,6 +211,65 @@ static void WebUpdateHandleNotFound(AsyncWebServerRequest *request)
   response->addHeader("Expires", "-1");
   request->send(response);
 }
+static void HandleReset(AsyncWebServerRequest *request)
+{
+  if (request->hasArg("hardware"))
+  {
+    SPIFFS.remove("/hardware.json");
+  }
+  if (request->hasArg("options"))
+  {
+    SPIFFS.remove("/options.json");
+  }
+  // if (request->hasArg("model") || request->hasArg("config")) {
+  //   config.SetDefaults(true);
+  // }
+  AsyncWebServerResponse *response = request->beginResponse(200, "application/json", "Reset complete, rebooting...");
+  response->addHeader("Connection", "close");
+  request->send(response);
+  request->client()->close();
+  rebootTime = millis() + 100;
+}
+static void HandleReboot(AsyncWebServerRequest *request)
+{
+  AsyncWebServerResponse *response = request->beginResponse(200, "application/json", "Kill -9, no more CPU time!");
+  response->addHeader("Connection", "close");
+  request->send(response);
+  request->client()->close();
+  rebootTime = millis() + 100;
+}
+static void putFile(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
+{
+  static File file;
+  static size_t bytes;
+  if (!file || request->url() != file.name())
+  {
+    file = SPIFFS.open(request->url(), "w");
+    bytes = 0;
+  }
+  file.write(data, len);
+  bytes += len;
+  if (bytes == total)
+  {
+    file.close();
+  }
+}
+
+static void getFile(AsyncWebServerRequest *request)
+{
+  if (request->url() == "/options.json")
+  {
+    request->send(200, "application/json", getOptions());
+  }
+  else if (request->url() == "/hardware.json")
+  {
+    request->send(200, "application/json", getHardware());
+  }
+  else
+  {
+    request->send(SPIFFS, request->url().c_str(), "text/plain", true);
+  }
+}
 static void WebUpdateSendNetworks(AsyncWebServerRequest *request)
 {
   int numNetworks = WiFi.scanComplete();
@@ -263,7 +321,7 @@ static void sendResponse(AsyncWebServerRequest *request, const String &msg, WiFi
 static void WebUpdateAccessPoint(AsyncWebServerRequest *request)
 {
   DBGLN("Starting Access Point");
-  String msg = String("Access Point starting, please connect to access point '") + wifi_ap_ssid + "' with password '" + wifi_ap_password + "'";
+  String msg = String("Access Point starting, please connect to access point '") + wifi_ap_ssid + LoraMesher::getInstance().getLocalAddress() + "' with password '" + wifi_ap_password + "'";
   sendResponse(request, msg, WIFI_AP);
 }
 
@@ -282,7 +340,8 @@ static void WebUpdateSetHome(AsyncWebServerRequest *request)
   DBGLN("Setting network %s", ssid.c_str());
   strcpy(station_ssid, ssid.c_str());
   strcpy(station_password, password.c_str());
-  if (request->hasArg("save")) {
+  if (request->hasArg("save"))
+  {
     strlcpy(firmwareOptions.home_wifi_ssid, ssid.c_str(), sizeof(firmwareOptions.home_wifi_ssid));
     strlcpy(firmwareOptions.home_wifi_password, password.c_str(), sizeof(firmwareOptions.home_wifi_password));
     saveOptions();
@@ -298,14 +357,14 @@ static void WebUpdateHandleRoot(AsyncWebServerRequest *request)
   }
   force_update = request->hasArg("force");
   AsyncWebServerResponse *response;
-  response = request->beginResponse_P(200, "text/html", (uint8_t *)INDEX_HTML, sizeof(INDEX_HTML));
+  response = request->beginResponse(200, "text/html", (uint8_t *)INDEX_HTML, sizeof(INDEX_HTML));
   if (connectionState == hardwareUndefined)
   {
-    response = request->beginResponse_P(200, "text/html", (uint8_t *)HARDWARE_HTML, sizeof(HARDWARE_HTML));
+    response = request->beginResponse(200, "text/html", (uint8_t *)HARDWARE_HTML, sizeof(HARDWARE_HTML));
   }
   else
   {
-    response = request->beginResponse_P(200, "text/html", (uint8_t *)INDEX_HTML, sizeof(INDEX_HTML));
+    response = request->beginResponse(200, "text/html", (uint8_t *)INDEX_HTML, sizeof(INDEX_HTML));
   }
   response->addHeader("Content-Encoding", "gzip");
   response->addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -339,6 +398,18 @@ static void startServices()
   server.on("/networks.json", WebUpdateSendNetworks);
   server.on("/sethome", WebUpdateSetHome);
   server.onNotFound(WebUpdateHandleNotFound);
+
+  DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
+  DefaultHeaders::Instance().addHeader("Access-Control-Max-Age", "600");
+  DefaultHeaders::Instance().addHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
+  DefaultHeaders::Instance().addHeader("Access-Control-Allow-Headers", "*");
+
+  server.on("/hardware.html", WebUpdateSendContent);
+  server.on("/hardware.js", WebUpdateSendContent);
+  server.on("/hardware.json", getFile).onBody(putFile);
+  server.on("/options.json", HTTP_GET, getFile);
+  server.on("/reboot", HandleReboot);
+  server.on("/reset", HandleReset);
   server.begin();
   servicesStarted = true;
 
@@ -397,7 +468,14 @@ static void HandleWebUpdate()
       WiFi.setTxPower(WIFI_POWER_19_5dBm);
 #endif
       WiFi.softAPConfig(ipAddress, ipAddress, netMsk);
-      WiFi.softAP(wifi_ap_ssid, wifi_ap_password);
+      char macStr[5];                                                                        
+      snprintf(macStr, sizeof(macStr), "%04X", LoraMesher::getInstance().getLocalAddress()); 
+      // Kết hợp SSID với MAC
+      char ap_ssid[50];
+      strncpy(ap_ssid, wifi_ap_ssid, sizeof(ap_ssid) - 1);
+      strncat(ap_ssid, "-", sizeof(wifi_ap_ssid) - strlen(wifi_ap_ssid) - 1);    // Thêm dấu "-"
+      strncat(ap_ssid, macStr, sizeof(wifi_ap_ssid) - strlen(wifi_ap_ssid) - 1); // Thêm MAC
+      WiFi.softAP(ap_ssid, wifi_ap_password);
       startServices();
       break;
     case WIFI_STA:
@@ -437,21 +515,13 @@ static int timeout()
   }
   return DURATION_NEVER;
 }
-
-bool Wifi_Service::isConnected(){
-   wl_status_t status = WiFi.status();
-  if (status == WL_CONNECTED && wifiMode == WIFI_STA  )
-    return true;
-  else
-    return false;
-}
 // Khai báo device_t cho Wi-Fi
 device_t WIFI_device = {
     .initialize = initialize,
     .start = start,
     .event = event,
     .timeout = timeout,
-    .id=deviceId::WiFi,
-    };
+    .id = deviceId::WiFi,
+};
 
 #endif // Kết thúc kiểm tra PLATFORM_ESP8266 || PLATFORM_ESP32

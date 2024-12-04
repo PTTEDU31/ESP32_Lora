@@ -23,13 +23,10 @@
     "ledidx_rgb_status":[0],
     "ledidx_rgb_boot":[0],
 
-    "screen_type": 5,
-    "screen_sck": 35,
-    "screen_mosi": 36,
-    "screen_rst": 37,
-    "screen_dc": 38,
-    "screen_cs": 39,
-    "screen_bl": -40,
+    "screen_sck": 40,
+    "screen_sda": 41,
+    "screen_type": 1,
+    "screen_reversed": 1,
 
     "use_backpack": true,
     "debug_backpack_baud": 115200,
@@ -45,7 +42,7 @@
     "GPRS_baud": 115200,
     "GPRS_rx": 10,
     "GPRS_tx": 11,
-    "i2s_scl": 45,
-    "i2s_sda": 47,
-    "i2s_latch": 40
+    "i2s_scl": 35,
+    "i2s_sda": 36,
+    "i2s_latch": 37
 }

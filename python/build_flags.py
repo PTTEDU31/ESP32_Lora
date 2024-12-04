@@ -46,13 +46,13 @@ def process_json_flag(define):
         if parts.group(1) == "AUTO_WIFI_ON_INTERVAL":
             parts = re.search(r"-D(.*)\s*=\s*\"?([0-9]+).*\"?$", define)
             json_flags['wifi-on-interval'] = int(dequote(parts.group(2)))
-        if parts.group(1) == "TLM_REPORT_INTERVAL_MS" :
+        if parts.group(1) == "TLM_REPORT_INTERVAL_MS":
             parts = re.search(r"-D(.*)\s*=\s*\"?([0-9]+).*\"?$", define)
             json_flags['tlm-interval'] = int(dequote(parts.group(2)))
-        if parts.group(1) == "FAN_MIN_RUNTIME"  :
+        if parts.group(1) == "FAN_MIN_RUNTIME":
             parts = re.search(r"-D(.*)\s*=\s*\"?([0-9]+).*\"?$", define)
             json_flags['fan-runtime'] = int(dequote(parts.group(2)))
-        if parts.group(1) == "RCVR_UART_BAUD" :
+        if parts.group(1) == "RCVR_UART_BAUD":
             parts = re.search(r"-D(.*)\s*=\s*\"?([0-9]+).*\"?$", define)
             json_flags['rcvr-uart-baud'] = int(dequote(parts.group(2)))
         if parts.group(1) == "USE_AIRPORT_AT_BAUD":
@@ -62,9 +62,28 @@ def process_json_flag(define):
                 json_flags['rcvr-uart-baud'] = int(dequote(parts.group(2)))
             else:
                 json_flags['airport-uart-baud'] = int(dequote(parts.group(2)))
-    if define == "-DUNLOCK_HIGHER_POWER"  :
+        if parts.group(1) == "MQTT_SERVER":
+            json_flags['mqtt-server'] = dequote(parts.group(2))
+        if parts.group(1) == "MQTT_PORT":
+            json_flags['mqtt-port'] = int(dequote(parts.group(2)))
+        if parts.group(1) == "MQTT_USERNAME":
+            json_flags['mqtt-username'] = dequote(parts.group(2))
+        if parts.group(1) == "MQTT_PASSWORD":
+            json_flags['mqtt-password'] = dequote(parts.group(2))
+        if parts.group(1) == "MQTT_TOPIC_SUB":
+            json_flags['mqtt-topic-sub'] = dequote(parts.group(2))
+        if parts.group(1) == "MQTT_TOPIC_OUT":
+            json_flags['mqtt-topic-out'] = dequote(parts.group(2))
+        if parts.group(1) == "MQTT_MAX_PACKET_SIZE":
+            json_flags['mqtt-max-packet-size'] = int(dequote(parts.group(2)))
+        if parts.group(1) == "MQTT_MAX_QUEUE_SIZE":
+            json_flags['mqtt-max-queue-size'] = int(dequote(parts.group(2)))
+        if parts.group(1) == "MQTT_STILL_CONNECTED_INTERVAL":
+            json_flags['mqtt-still-connected-interval'] = int(dequote(parts.group(2)))
+
+    if define == "-DUNLOCK_HIGHER_POWER":
         json_flags['unlock-higher-power'] = True
-    if define == "-DLOCK_ON_FIRST_CONNECTION" :
+    if define == "-DLOCK_ON_FIRST_CONNECTION":
         json_flags['lock-on-first-connection'] = True
 
 

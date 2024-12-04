@@ -259,6 +259,32 @@ td img.icon-pwm {
 					<tr><td></td><td>G-sensor interrupt pin<img class="icon-input"/></td><td><input size='3' id='misc_gsensor_int' name='misc_gsensor_int' type='text'/></td><td>Pin connected the STK8xxx g-sensor for interrupts</td></tr>
 					<tr><td></td><td>Has LM75A Thermal sensor</td><td><input size='3' id='thermal_lm75a' name='thermal_lm75a' type='checkbox'/></td><td>Checked if there is a LM75A thermal sensor on the I2C bus</td></tr>
 @@end
+					<tr><td colspan='2'><b>RS485 Configuration</b></td></tr>
+					<tr><td></td><td>Has RS485</td><td><input size='3' id='has_rs485' name='has_rs485' type='checkbox'/></td><td>Enable RS485 communication</td></tr>
+					<tr><td></td><td>RS485 RX pin<img class="icon-input"/></td><td><input size='3' id='rs485_rx' name='rs485_rx' type='text'/></td><td>Pin for RS485 RX</td></tr>
+					<tr><td></td><td>RS485 TX pin<img class="icon-output"/></td><td><input size='3' id='rs485_tx' name='rs485_tx' type='text'/></td><td>Pin for RS485 TX</td></tr>
+					<tr><td></td><td>RS485 Baud Rate</td><td><input size='7' id='rs485_baud' name='rs485_baud' type='text'/></td><td>Communication baud rate for RS485</td></tr>
+
+					<tr><td colspan='2'><b>GPRS Configuration</b></td></tr>
+					<tr><td></td><td>Has GPRS</td><td><input size='3' id='has_gprs' name='has_gprs' type='checkbox'/></td><td>Enable GPRS communication</td></tr>
+					<tr><td></td><td>GPRS Protocol</td>
+						<td>
+							<select id="GPRS_protocal" name="GPRS_protocal">
+								<option value="0" selected>None</option>
+								<option value="1">UBLOX M10</option>
+								<option value="2">UBLOX M7</option>
+								<option value="3">NMEA</option>
+							</select>
+						</td>
+						<td>Protocol used for GPRS communication</td></tr>
+					<tr><td></td><td>GPRS Baud Rate</td><td><input size='7' id='GPRS_baud' name='GPRS_baud' type='text'/></td><td>Communication baud rate for GPRS</td></tr>
+					<tr><td></td><td>GPRS RX pin<img class="icon-input"/></td><td><input size='3' id='GPRS_rx' name='GPRS_rx' type='text'/></td><td>Pin for GPRS RX</td></tr>
+					<tr><td></td><td>GPRS TX pin<img class="icon-output"/></td><td><input size='3' id='GPRS_tx' name='GPRS_tx' type='text'/></td><td>Pin for GPRS TX</td></tr>
+
+					<tr><td colspan='2'><b>I2S Configuration</b></td></tr>
+					<tr><td></td><td>I2S SCL pin<img class="icon-output"/></td><td><input size='3' id='i2s_scl' name='i2s_scl' type='text'/></td><td>I2S clock pin</td></tr>
+					<tr><td></td><td>I2S SDA pin<img class="icon-input"/><img class="icon-output"/></td><td><input size='3' id='i2s_sda' name='i2s_sda' type='text'/></td><td>I2S data pin</td></tr>
+					<tr><td></td><td>I2S Latch pin<img class="icon-output"/></td><td><input size='3' id='i2s_latch' name='i2s_latch' type='text'/></td><td>I2S latch pin</td></tr>
 @@if not isTX:
 					<tr><td colspan='2'><b>PWM</td></tr>
 					<tr><td></td><td>PWM output pins<img class="icon-pwm"/></td><td><input size='40' id='pwm_outputs' name='pwm_outputs' type='text' class='array'/></td><td>Comma-separated list of pins used for PWM output</td></tr>

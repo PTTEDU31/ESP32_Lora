@@ -111,7 +111,7 @@ def config_hardware_info(source, target, env):
         product_name_encoded = (product_name.encode() + (b'\0' * 128))[:128]
         lua_name_encoded = (lua_name.encode() + (b'\0' * 16))[:16]
         defines = json.JSONEncoder().encode(env['OPTIONS_JSON'])
-        defines = (defines.encode() + (b'\0' * 512))[:512]
+        defines = (defines.encode() + (b'\0' * 1024))[:1024]
         layout = (json.JSONEncoder().encode(target_part_data).encode() + (b'\0' * 2048))[:2048]
 
         bin_file.write(product_name_encoded)

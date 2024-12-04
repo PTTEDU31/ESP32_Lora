@@ -49,3 +49,4 @@ enum {
 extern uint8_t UID[UID_LEN];
 extern connectionState_e connectionState;
 extern bool teamraceHasModelMatch;
+# define MAX_CONNECTION_TRY 10
