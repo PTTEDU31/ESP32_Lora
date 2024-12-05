@@ -381,7 +381,7 @@ static void WebUpdateSendContent(AsyncWebServerRequest *request)
   {
     if (request->url().equals(files[i].url))
     {
-      AsyncWebServerResponse *response = request->beginResponse_P(200, files[i].contentType, files[i].content, files[i].size);
+      AsyncWebServerResponse *response = request->beginResponse(200, files[i].contentType, files[i].content, files[i].size);
       response->addHeader("Content-Encoding", "gzip");
       request->send(response);
       return;

@@ -97,7 +97,7 @@ private:
     void processMQTTMessage();
 
     void mqtt_service_init(const char* client_id);
-    void mqtt_app_start(const char* client_id);
+    void mqtt_app_start(const char *client_id);
     void mqtt_service_send(const char* topic, const char* data, int len);
 
     bool initialized = false;
