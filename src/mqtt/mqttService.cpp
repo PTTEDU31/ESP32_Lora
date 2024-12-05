@@ -1,4 +1,5 @@
 #include "mqttService.h"
+#include "WiFi.h"
 
 static const char *MQTT_TAG = "MQTT";
 
@@ -81,10 +82,10 @@ bool MqttService::connect()
         return false;
     }
 
-    // if (!WiFiServerService::getInstance().connectWiFi()) {
-    //     ESP_LOGW(MQTT_TAG, "No WiFi connection");
-    //     return false;
-    // }
+    if (!WiFi.isConnected()) {
+        ESP_LOGW(MQTT_TAG, "No WiFi connection");
+        return false;
+    }
 
     if (isDeviceConnected())
         return true;
@@ -229,8 +230,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         {
             ESP_LOGI(MQTT_TAG, "Last errno string (%s)", strerror(event->error_handle->esp_transport_sock_errno));
         }
-        // if (WiFiServerService::getInstance().isConnected() && mqtt_connected) {
-        if (mqtt_connected)
+        if (WiFi.isConnected() && mqtt_connected) 
         {
             ESP_LOGI(MQTT_TAG, "MQTT restart (rebooting)");
             esp_restart();
@@ -309,6 +309,7 @@ void MqttService::mqtt_service_send(const char *topic, const char *data, int len
     }
     ESP_LOGI(MQTT_TAG, "sent publish successful, msg_id %d", msg_id);
 }
+
 
 void MqttService::process_message(const char *topic, const char *payload)
 {

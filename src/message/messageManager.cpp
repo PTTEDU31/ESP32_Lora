@@ -86,7 +86,7 @@ String MessageManager::getJSON(DataMessage* message) {
 }
 
 DataMessage* MessageManager::getDataMessage(String json) {
-    DynamicJsonDocument doc(1024);
+    JsonDocument doc;
 
     DeserializationError error = deserializeJson(doc, json);
 
@@ -111,12 +111,11 @@ DataMessage* MessageManager::getDataMessage(String json) {
 }
 
 String MessageManager::printDataMessageHeader(String title, DataMessage* message) {
-    DynamicJsonDocument doc(1024);
+    JsonDocument doc;
 
     doc["title"] = title;
 
-    JsonObject data = doc.createNestedObject("data");
-
+    JsonObject data = doc["data"].to<JsonObject>();
     message->serialize(data);
 
     String json;
