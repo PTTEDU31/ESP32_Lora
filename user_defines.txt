@@ -56,8 +56,8 @@
 ### OTHER OPTIONS: ###
 
 -DAUTO_WIFI_ON_INTERVAL=60
--DHOME_WIFI_SSID="1305-A1"
--DHOME_WIFI_PASSWORD="Tung3108"
+-DHOME_WIFI_SSID="HIEN TRA"
+-DHOME_WIFI_PASSWORD="hientra1973"
 
 # Enables code for talking to a connected ESP8266 backpack on the TX module, and associated Lua params
 # The device target should enable this automatically for devices that come with this, but can be added
@@ -121,10 +121,10 @@
 #-DUSE_AIRPORT_AT_BAUD=9600
 
 # MQTT configuration
--DMQTT_SERVER="192.168.31.26" 
+-DMQTT_SERVER="192.168.31.135" 
 -DMQTT_PORT=1883
--DMQTT_USERNAME="admin"
--DMQTT_PASSWORD="public"
+-DMQTT_USERNAME=""
+-DMQTT_PASSWORD=""
 -DMQTT_TOPIC_SUB="from-server/"
 -DMQTT_TOPIC_OUT="to-server/"
 -DMQTT_MAX_PACKET_SIZE=512 

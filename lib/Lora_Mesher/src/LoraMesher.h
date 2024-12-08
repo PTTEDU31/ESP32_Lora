@@ -140,7 +140,7 @@ public:
      *
      * @ref RadioLib reference begin code
      */
-    void begin(LoraMesherConfig config = LoraMesherConfig());
+    int begin(LoraMesherConfig config = LoraMesherConfig());
 
     /**
      * @brief Start/Resume LoRaMesher. After calling begin(...) or standby() you can Start/resume the LoRaMesher.
@@ -593,7 +593,7 @@ private:
 
     void receivingRoutine();
 
-    void initializeLoRa();
+    int initializeLoRa();
 
     void initializeSchedulers();
 

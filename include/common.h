@@ -19,13 +19,14 @@
 typedef enum
 {
     connected,
-    tentative,        // RX only
-    awaitingModelId,  // TX only
+    // tentative,        // RX only
+    // awaitingModelId,  // TX only
+    connected_STA,
     disconnected,
     MODE_STATES,
     // States below here are special mode states
-    noCrossfire,
-    bleJoystick,
+    // noCrossfire,
+    // bleJoystick,
     NO_CONFIG_SAVE_STATES,
     wifiUpdate,
     serialUpdate,
@@ -45,8 +46,13 @@ enum {
     RADIO_TYPE_SX128x_LORA,
     RADIO_TYPE_SX128x_FLRC,
 };
+typedef enum {
+    NODE,
+    GATEWAY,
+} _isGateway;
 
 extern uint8_t UID[UID_LEN];
 extern connectionState_e connectionState;
 extern bool teamraceHasModelMatch;
+extern _isGateway isGateway;
 # define MAX_CONNECTION_TRY 10

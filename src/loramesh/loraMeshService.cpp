@@ -1,5 +1,6 @@
 #include "loraMeshService.h"
 #include "targets.h"
+#include "common.h"
 static const char *LMS_TAG = "LoRaMeshService";
 
 #if defined(NAYAD_V1) || defined(NAYAD_V1R2) || defined(T_BEAM_LORA_32) || defined(T_BEAM_V10) || defined(T_BEAM_V12)
@@ -42,7 +43,14 @@ void LoRaMeshService::initLoraMesherService()
     ESP_LOGV(LMS_TAG, "LoraMesher config: LORA_SCK: %d, LORA_MISO: %d, LORA_MOSI: %d, LORA_CS: %d", GPIO_PIN_SCK, GPIO_PIN_MISO, GPIO_PIN_MOSI, GPIO_PIN_NSS);
 
     // Initialize LoRaMesher
-    radio.begin(config);
+    // radio.begin(config);
+    if (radio.begin(config) !=  0)
+    {
+        ESP_LOGW(LMS_TAG, "Failed to initialize LoRaMesher radio. Retrying...");
+        if(connectionState != hardwareUndefined)
+                connectionState = hardwareUndefined;
+        return;
+    }
 
     // Create the receive task and add it to the LoRaMesher
     createReceiveMessages();

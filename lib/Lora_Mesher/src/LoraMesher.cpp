@@ -7,21 +7,25 @@
 
 LoraMesher::LoraMesher() {}
 
-void LoraMesher::begin(LoraMesherConfig config) {
+int LoraMesher::begin(LoraMesherConfig config) {
     ESP_LOGV(LM_TAG, "Initializing LoraMesher v%s", LM_VERSION);
-
+    int res;
     // Set the configuration
     *loraMesherConfig = config;
+    // Initialize the radioi
+    res = initializeLoRa();
+    if( res != 0 ){
+            // Recalculate the max time on air
+
+        // Initialize the queues
+        return res;
+
+    }
     initConfiguration();
 
-    // Initialize the radio
-    initializeLoRa();
-
-    // Recalculate the max time on air
-    recalculateMaxTimeOnAir();
-
-    // Initialize the queues
     initializeSchedulers();
+    recalculateMaxTimeOnAir();
+    return 0;
 }
 
 void LoraMesher::standby() {
@@ -133,7 +137,7 @@ void LoraMesher::initConfiguration() {
     ESP_LOGW(LM_TAG, "Exceeding this number will cause unexpected behavior.");
 }
 
-void LoraMesher::initializeLoRa() {
+int LoraMesher::initializeLoRa() {
     ESP_LOGV(LM_TAG, "Initializing RadioLib");
 
     LoraMesherConfig config = *loraMesherConfig;
@@ -229,12 +233,14 @@ void LoraMesher::initializeLoRa() {
     int res = radio->begin(config.freq, config.bw, config.sf, config.cr, config.syncWord, config.power, config.preambleLength);
     if (res != 0) {
         ESP_LOGE(LM_TAG, "Radio module gave error: %d", res);
+        return res;
     }
 
 #ifdef LM_ADDCRC_PAYLOAD
     radio->setCRC(true);
 #endif
     ESP_LOGI(LM_TAG, "LoRa module initialization DONE");
+    return 0;
 }
 
 void LoraMesher::setDioActionsForScanChannel() {

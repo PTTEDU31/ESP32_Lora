@@ -8,7 +8,7 @@
 #include "LoraMesher.h"
 #include "WiFi.h"
 extern WiFiMode_t wifiMode;
-int count = 0 ;
+uint64_t count = 0 ;
 // OLED specific header files.
 U8G2 *u8g2;
 
@@ -72,8 +72,14 @@ void OLEDDisplay::display_wifi_status()
     }
     u8g2->setCursor(0, 36);
     u8g2->print(count++);
+    u8g2->setCursor(60, 36);
+    u8g2->print(((isGateway == GATEWAY)?"GATEWAY":"NODE"));
     u8g2->setCursor(0, 48);
     u8g2->print(macStr);
+    u8g2->setCursor(30, 48);
+    u8g2->print(connectionState);
+    u8g2->setCursor(60, 48);
+    u8g2->print(ESP.getFreeHeap());
     u8g2->sendBuffer();
 
 }
