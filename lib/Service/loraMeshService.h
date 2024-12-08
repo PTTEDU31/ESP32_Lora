@@ -8,7 +8,7 @@
 
 #include "loraMeshMessage.h"
 
-#include "message/messageManager.h"
+#include "messageManager.h"
 
 #include "messageService.h"
 

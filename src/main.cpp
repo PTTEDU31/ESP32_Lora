@@ -5,19 +5,21 @@
 #include "PWM.h"
 #if defined(PLATFORM_ESP32)
 #include "devScreen.h"
+#include "devETH.h"
 #endif
 // Manager
-#include "message/messageManager.h"
+#include "messageManager.h"
 
 // LoRaMesh
-#include "loramesh/loraMeshService.h"
+#include "loraMeshService.h"
 
 static const char *TAG = "Main";
 unsigned long rebootTime = 0;
 device_affinity_t devices[] = {
     {&RGB_device, 0},
     {&WIFI_device, 0},
-    {&Screen_device, 0}};
+    {&Screen_device, 0},
+    {&eth_device,1}};
 
 Stream *NodeUSB;
 Stream *NodeBackpack;
@@ -26,10 +28,7 @@ Stream *NodeBackpack;
  * Setup GPIOs or other hardware, config not yet loaded
  ***/
 
-
-
 #pragma region LoRaMesher
-
 LoRaMeshService &loraMeshService = LoRaMeshService::getInstance();
 
 void initLoRaMesher()
@@ -39,19 +38,6 @@ void initLoRaMesher()
 }
 
 #pragma endregion
-
-#pragma region MQTT
-#include "mqtt/mqttService.h"
-
-MqttService &mqttService = MqttService::getInstance();
-
-void initMQTT()
-{
-    mqttService.initMqtt(String(loraMeshService.getLocalAddress()));
-}
-
-#pragma endregion
-
 #pragma region Manager
 
 MessageManager &manager = MessageManager::getInstance();
@@ -62,12 +48,8 @@ void initManager()
     ESP_LOGV(TAG, "Manager initialized");
     manager.addMessageService(&loraMeshService);
     ESP_LOGV(TAG, "LoRaMesher service added to manager");
-
-    manager.addMessageService(&mqttService);
-    ESP_LOGV(TAG, "MQTT service added to manager");
 }
 #pragma endregion
-
 
 #if defined(PLATFORM_ESP32_S3)
 #include "USB.h"
@@ -147,8 +129,6 @@ bool setupHardwareFromOptions()
             {&WIFI_device, 1}};
         devicesRegister(wifi_device, ARRAY_SIZE(wifi_device));
         devicesInit();
-
-        connectionState = hardwareUndefined;
         return false;
     }
     return true;
@@ -161,31 +141,24 @@ void setup()
         devicesRegister(devices, ARRAY_SIZE(devices));
         devicesInit();
         devicesStart();
-        connectionState = wifiUpdate;
     }
     pwm.init_pwm();
     // Initialize Manager
     initManager();
 
     ESP_LOGV(TAG, "Heap after initManager: %d", ESP.getFreeHeap());
-#ifdef MQTT_ENABLED
-    // Initialize MQTT
-    initMQTT();
-    ESP_LOGV(TAG, "Heap after initMQTT: %d", ESP.getFreeHeap());
-#endif
-    // Initialize LoRaMesh
     initLoRaMesher();
     ESP_LOGV(TAG, "Heap after initLoRaMesher: %d", ESP.getFreeHeap());
+    NodeUSB->print("Commnad:");
+    NodeUSB->println(manager.getAvailableCommands());
 }
-
+#include "WiFi.h"
 void loop()
 {
-    // NodeBackpack.printf("TX_RX_PIN %d", GPIO_PIN_RCSIGNAL_TX);
     unsigned long now = millis();
     devicesUpdate(now);
     if (rebootTime != 0 && now > rebootTime)
     {
         ESP.restart();
     }
-    // Serial.println(xPortGetCoreID());
 }

@@ -439,7 +439,7 @@ static void HandleWebUpdate()
     }
     laststatus = status;
   }
-  if (status != WL_CONNECTED && wifiMode == WIFI_STA && (now - changeTime) > 30000)
+  if (status != WL_CONNECTED && wifiMode == WIFI_STA && (now - changeTime) > 300000)
   {
     changeTime = now;
     changeMode = WIFI_AP;
@@ -511,7 +511,7 @@ static int timeout()
   if (wifiStarted)
   {
     HandleWebUpdate();
-    return 2;
+    return 500;
   }
   return DURATION_NEVER;
 }

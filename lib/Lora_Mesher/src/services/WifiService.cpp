@@ -9,13 +9,17 @@ void WiFiService::init()
 // char baseMacChr[18] = {0};
 // sprintf(baseMacChr, "%02X:%02X:%02X:%02X:%02X:%02X", baseMac[0], baseMac[1], baseMac[2], baseMac[3], baseMac[4], baseMac[5]);
 // localAddress = (baseMac[4] << 8) | baseMac[5];
-#ifdef ARDUINO
-    WiFi.macAddress(baseMac);
-#else
-    efuse_hal_get_mac(baseMac);
-#endif
+// #ifdef ARDUINO
+//     // WiFi.macAddress(baseMac);
+// #else
+//     efuse_hal_get_mac(baseMac);
+// #endif
+// Get MAC address for WiFi station
+    esp_efuse_mac_get_default (baseMac);
+    char baseMacChr[18] = {0};
+    sprintf(baseMacChr, "%02X:%02X:%02X:%02X:%02X:%02X", baseMac[0], baseMac[1], baseMac[2], baseMac[3], baseMac[4], baseMac[5]);
     localAddress = (baseMac[4] << 8) | baseMac[5];
-    ESP_LOGI(LM_TAG, "Local LoRa address (from WiFi MAC): %X", localAddress);
+    ESP_LOGI(LM_TAG, "Local LoRa address (from WiFi MAC): %X", baseMacChr);
 }
 
 uint16_t WiFiService::getLocalAddress()
