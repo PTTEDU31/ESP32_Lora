@@ -1,5 +1,5 @@
 #include "device.h"
-
+#include "devButton.h"
 #if defined(PLATFORM_ESP8266) || defined(PLATFORM_ESP32)
 
 #include <DNSServer.h>
@@ -83,11 +83,8 @@ static void startWiFi(unsigned long now)
   {
     return;
   }
-
   if (connectionState < FAILURE_STATES)
-  {
     setWifiUpdateMode();
-  }
 
   DBGLN("Begin Webupdater");
 
@@ -119,6 +116,10 @@ static void initialize()
 #if defined(PLATFORM_ESP8266)
   WiFi.forceSleepBegin();
 #endif
+  if (GATEWAY)
+    startWiFi(millis());
+  registerButtonFunction(ACTION_START_WIFI, []()
+                         { setWifiUpdateMode(); });
 }
 
 // Hàm bắt đầu Wi-Fi
@@ -468,8 +469,8 @@ static void HandleWebUpdate()
       WiFi.setTxPower(WIFI_POWER_19_5dBm);
 #endif
       WiFi.softAPConfig(ipAddress, ipAddress, netMsk);
-      char macStr[5];                                                                        
-      snprintf(macStr, sizeof(macStr), "%04X", LoraMesher::getInstance().getLocalAddress()); 
+      char macStr[5];
+      snprintf(macStr, sizeof(macStr), "%04X", LoraMesher::getInstance().getLocalAddress());
       // Kết hợp SSID với MAC
       char ap_ssid[50];
       strncpy(ap_ssid, wifi_ap_ssid, sizeof(ap_ssid) - 1);
@@ -511,7 +512,7 @@ static int timeout()
   if (wifiStarted)
   {
     HandleWebUpdate();
-    return 500;
+    return 50;
   }
   return DURATION_NEVER;
 }

@@ -82,6 +82,9 @@ td img.icon-pwm {
 			<form id='upload_hardware' method='POST' action="/hardware">
 				<input type="hidden" id="customised" name="customised" value="true"/>
 				<table>
+					<tr><td colspan='2'><b>GATEWAY CONF</td></tr>
+					<tr><td></td><td>GateWay</td><td><input size='3' id='isGateWay' name='isGateWay' type='checkbox'/></td><td>Config Broad is GATEWAY</td></tr>
+
 					<tr><td colspan='2'><b>CRSF Serial Pins</td></tr>
 					<tr><td width="30"></td><td>RX pin<img class="icon-input"/></td><td><input size='3' id='serial_rx' name='serial_rx' type='text'/></td><td>Pin used to receive CRSF signal from the handset</td></tr>
 					<tr><td></td><td>TX pin<img class="icon-output"/></td><td><input size='3' id='serial_tx' name='serial_tx' type='text'/></td><td>Pin used to transmit CRSF telemetry to the handset (may be the same as the RX PIN)</td></tr>

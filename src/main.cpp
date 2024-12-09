@@ -2,7 +2,9 @@
 #include "options.h"
 #include "devLED.h"
 #include "devWIFI.h"
+#include "devButton.h"
 #include "PWM.h"
+
 #if defined(PLATFORM_ESP32)
 #include "devScreen.h"
 #include "devETH.h"
@@ -18,8 +20,8 @@ unsigned long rebootTime = 0;
 device_affinity_t devices[] = {
     {&RGB_device, 0},
     {&WIFI_device, 0},
-    {&Screen_device, 0},
-    {&eth_device,1}};
+    {&Button_device, 0},
+    {&Screen_device, 0}};
 
 Stream *NodeUSB;
 Stream *NodeBackpack;

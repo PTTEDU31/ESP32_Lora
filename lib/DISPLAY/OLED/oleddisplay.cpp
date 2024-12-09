@@ -5,7 +5,7 @@
 #include "options.h"
 #include "logging.h"
 #include "common.h"
-#include "LoraMesher.h"
+#include "loraMeshService.h"
 #include "WiFi.h"
 extern WiFiMode_t wifiMode;
 uint64_t count = 0 ;
@@ -27,7 +27,7 @@ void OLEDDisplay::init()
 void OLEDDisplay::display_print_addr()
 {
     char macStr[5];
-    snprintf(macStr, sizeof(macStr), "%04X", LoraMesher::getInstance().getLocalAddress());
+    snprintf(macStr, sizeof(macStr), "%04X", LoRaMeshService::getInstance().getLocalAddress());
     u8g2->clearBuffer();
     u8g2->setFont(u8g2_font_ncenB14_tr);
     u8g2->setCursor(20, 20);
@@ -38,7 +38,7 @@ void OLEDDisplay::display_print_addr()
 void OLEDDisplay::display_wifi_status()
 {
      char macStr[5];
-    snprintf(macStr, sizeof(macStr), "%04X", LoraMesher::getInstance().getLocalAddress());
+    snprintf(macStr, sizeof(macStr), "%04X", LoRaMeshService::getInstance().getLocalAddress());
     u8g2->clearBuffer();
     u8g2->setFont(u8g2_font_6x10_tr);
 
@@ -73,7 +73,7 @@ void OLEDDisplay::display_wifi_status()
     u8g2->setCursor(0, 36);
     u8g2->print(count++);
     u8g2->setCursor(60, 36);
-    u8g2->print(((isGateway == GATEWAY)?"GATEWAY":"NODE"));
+    u8g2->print(GATEWAY?"GATEWAY":"NODE");
     u8g2->setCursor(0, 48);
     u8g2->print(macStr);
     u8g2->setCursor(30, 48);

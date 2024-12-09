@@ -3,10 +3,9 @@
 #include "common.h"
 #include "logging.h"
 #include "loraMeshService.h"
-LoRaMeshService &loraMeshService = LoRaMeshService::getInstance();
-static int print_Routing {
-    DBGLN("\ni2s_init thành công");
-    return 1000;
+static int print_Routing () {
+    // DBGLN("\n Routing table: %s",LoRaMeshService::getInstance().getRoutingTable());
+    return 100;
 }
 device_t eth_device = {
     .initialize = nullptr,

@@ -2,6 +2,8 @@
 
 typedef enum
 {
+    //GATEWAY
+    HARDWARE_isGateWay,
     // Serial
     HARDWARE_serial_rx,
     HARDWARE_serial_tx,
@@ -52,8 +54,10 @@ typedef enum
 
     HARDWARE_power_control,
     HARDWARE_power_values,
+    HARDWARE_power_values_count,
     HARDWARE_power_values2,
     HARDWARE_power_values_dual,
+    HARDWARE_power_values_dual_count,
 
     // Input
     HARDWARE_joystick,
