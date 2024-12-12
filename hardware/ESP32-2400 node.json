@@ -1,5 +1,5 @@
 {
-    "isGateWay":true,
+
     "serial_rx": 13,
     "serial_tx": 13,
     "radio_busy": 27,

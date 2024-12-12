@@ -1,15 +1,15 @@
 {
     "target": [
         {
-            "name": "ESP32-S3-base",
+            "name": "ESP32-S3-node",
             "version": "1.1.0",
-            "part": "ESP32S3-2400.json",
+            "part": "ESP32S3-2400 node.json",
             "platform": "esp32-s3", 
             "product_name": "ESP32 Series",
             "lua_name": "ESP32S3_LUA_BASE"
         },
         {
-            "name": "ESP32-S3-0.1",
+            "name": "ESP32-S3-GATEWAY",
             "version": "1.1.0",
             "part": "ESP32S3-2400.json", 
             "platform": "esp32-s3",
@@ -17,7 +17,15 @@
             "lua_name": "ESP32S3_LUA_TEST"
         },
         {
-            "name": "ESP32-base",
+            "name": "ESP32-node",
+            "version": "1.0.0",
+            "part": "ESP32-2400 node.json",
+            "platform": "esp32",
+            "product_name": "ESP32 General Module",
+            "lua_name": "ESP32_LUA_BASE"
+        },
+        {
+            "name": "ESP32-GATEWAY",
             "version": "1.0.0",
             "part": "ESP32-2400.json",
             "platform": "esp32",

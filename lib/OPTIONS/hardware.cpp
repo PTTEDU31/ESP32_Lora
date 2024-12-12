@@ -1,8 +1,7 @@
-// #if defined(TARGET_UNIFIED_TX) || defined(TARGET_UNIFIED_RX)
-
+#if !defined(UNIT_TEST)
 #include "options.h"
 #include "helpers.h"
-// #include "logging.h"
+#include "logging.h"
 #if defined(PLATFORM_ESP8266)
 #include <FS.h>
 #else
@@ -25,6 +24,7 @@ static const struct
     const char *name;
     const datatype_t type;
 } fields[] = {
+    {HARDWARE_isGateWay, "isGateWay", BOOL},
     {HARDWARE_serial_rx, "serial_rx", INT},
     {HARDWARE_serial_tx, "serial_tx", INT},
     {HARDWARE_serial1_rx, "serial1_rx", INT},
@@ -66,8 +66,10 @@ static const struct
     {HARDWARE_power_pdet_slope, "power_pdet_slope", FLOAT},
     {HARDWARE_power_control, "power_control", INT},
     {HARDWARE_power_values, "power_values", ARRAY},
+    {HARDWARE_power_values_count, "power_values", COUNT},
     {HARDWARE_power_values2, "power_values2", ARRAY},
     {HARDWARE_power_values_dual, "power_values_dual", ARRAY},
+    {HARDWARE_power_values_dual_count, "power_values_dual", COUNT},
     {HARDWARE_joystick, "joystick", INT},
     {HARDWARE_joystick_values, "joystick_values", ARRAY},
     {HARDWARE_five_way1, "five_way1", INT},
@@ -209,25 +211,24 @@ static void hardware_LoadFieldsFromDoc(JsonDocument &doc)
 {
     for (size_t i = 0; i < ARRAY_SIZE(fields); i++)
     {
-        if (doc[fields[i].name].is<decltype(fields[i].type)>())
+        if (doc[fields[i].name].is<JsonVariant>()) // Kiểm tra sự tồn tại của key
         {
-
             switch (fields[i].type)
             {
             case INT:
-                hardware[fields[i].position].int_value = doc[fields[i].name];
+                hardware[fields[i].position].int_value = doc[fields[i].name].as<int>();
                 break;
             case BOOL:
-                hardware[fields[i].position].bool_value = doc[fields[i].name];
+                hardware[fields[i].position].bool_value = doc[fields[i].name].as<bool>();
                 break;
             case FLOAT:
-                hardware[fields[i].position].float_value = doc[fields[i].name];
+                hardware[fields[i].position].float_value = doc[fields[i].name].as<float>();
                 break;
             case ARRAY:
             {
                 JsonArray array = doc[fields[i].name].as<JsonArray>();
                 hardware[fields[i].position].array_value = new int16_t[array.size()];
-                copyArray(doc[fields[i].name], hardware[fields[i].position].array_value, array.size());
+                copyArray(array, hardware[fields[i].position].array_value, array.size());
             }
             break;
             case COUNT:
@@ -240,6 +241,7 @@ static void hardware_LoadFieldsFromDoc(JsonDocument &doc)
         }
     }
 }
+
 
 bool hardware_init(EspFlashStream &strmFlash)
 {
@@ -271,6 +273,7 @@ bool hardware_init(EspFlashStream &strmFlash)
         return false;
     }
     serializeJson(doc, builtinHardwareConfig);
+
     hardware_LoadFieldsFromDoc(doc);
 
     return true;
@@ -305,5 +308,4 @@ const uint16_t *hardware_u16_array(nameType name)
 {
     return (uint16_t *)hardware[name].array_value;
 }
-
-// #endif
+#endif

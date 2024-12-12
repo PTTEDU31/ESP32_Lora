@@ -1,7 +1,7 @@
 #include "device.h"
-
+#include "devButton.h"
 #if defined(PLATFORM_ESP8266) || defined(PLATFORM_ESP32)
-
+#include "devMQTT.h"
 #include <DNSServer.h>
 #ifdef ESP32
 #include <AsyncTCP.h>
@@ -29,7 +29,7 @@
 #include <StreamString.h>
 
 #include "WebContent.h"
-#include "LoraMesher.h"
+#include "loraMeshService.h"
 static char station_ssid[33];
 static char station_password[65];
 
@@ -72,7 +72,29 @@ static struct
     {"/lr1121.js", "text/javascript", (uint8_t *)LR1121_JS, sizeof(LR1121_JS)},
 #endif
 };
+void WiFiEvent(WiFiEvent_t event)
+{
+    NodeBackpack->println("[WiFi-event] event: " + String(event));
+    switch (event)
+    {
+    case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+        NodeBackpack->println("WiFi connected");
+        NodeBackpack->println("IP address: " + WiFi.localIP().toString());
+        DEV_MQTT::getInstance().connectToMqtt();
+        if(GATEWAY)
+        LoRaMeshService::getInstance().setGateway();
+        break;
 
+    case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+        NodeBackpack->println("WiFi lost connection");
+        LoRaMeshService::getInstance().removeGateway();
+        break;
+
+    default:
+        NodeBackpack->println("Unhandled WiFi event: " + String(event));
+        break;
+    }
+}
 void setWifiUpdateMode()
 {
   connectionState = wifiUpdate;
@@ -83,11 +105,8 @@ static void startWiFi(unsigned long now)
   {
     return;
   }
-
   if (connectionState < FAILURE_STATES)
-  {
     setWifiUpdateMode();
-  }
 
   DBGLN("Begin Webupdater");
 
@@ -119,6 +138,11 @@ static void initialize()
 #if defined(PLATFORM_ESP8266)
   WiFi.forceSleepBegin();
 #endif
+  if (GATEWAY)
+    startWiFi(millis());
+  registerButtonFunction(ACTION_START_WIFI, []()
+                         { setWifiUpdateMode(); });
+  WiFi.onEvent(WiFiEvent);
 }
 
 // Hàm bắt đầu Wi-Fi
@@ -348,6 +372,30 @@ static void WebUpdateSetHome(AsyncWebServerRequest *request)
   }
   WebUpdateConnect(request);
 }
+static void WebUpdateSetMQTT(AsyncWebServerRequest *request)
+{
+  String mqtt_server = request->arg("mqtt_server");
+  String mqtt_port = request->arg("mqtt_port");
+  String mqtt_user = request->arg("mqtt_user");
+  String mqtt_pass = request->arg("mqtt_pass");
+
+  DBGLN("Setting MQTT_Server %s", mqtt_server.c_str());
+  DBGLN("Setting MQTT_Port %s", mqtt_port.c_str());
+  DBGLN("Setting MQTT_User %s", mqtt_user.c_str());
+  DBGLN("Setting MQTT_Pass %s", mqtt_pass.c_str());
+  // strcpy(station_ssid, ssid.c_str());
+  // strcpy(station_password, password.c_str());
+  if (request->hasArg("save"))
+  {
+    strlcpy(firmwareOptions.mqtt_server, mqtt_server.c_str(), sizeof(firmwareOptions.mqtt_server));
+    firmwareOptions.mqtt_port = mqtt_port.toInt();
+    strlcpy(firmwareOptions.mqtt_username, mqtt_user.c_str(), sizeof(firmwareOptions.mqtt_username));
+    strlcpy(firmwareOptions.mqtt_password, mqtt_port.c_str(), sizeof(firmwareOptions.mqtt_password));
+    saveOptions();
+  }
+
+  // WebUpdateConnect(request);
+}
 
 static void WebUpdateHandleRoot(AsyncWebServerRequest *request)
 {
@@ -397,6 +445,7 @@ static void startServices()
   server.on("/scan.js", WebUpdateSendContent);
   server.on("/networks.json", WebUpdateSendNetworks);
   server.on("/sethome", WebUpdateSetHome);
+  server.on("/mqtt-config", WebUpdateSetMQTT);
   server.onNotFound(WebUpdateHandleNotFound);
 
   DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
@@ -468,8 +517,8 @@ static void HandleWebUpdate()
       WiFi.setTxPower(WIFI_POWER_19_5dBm);
 #endif
       WiFi.softAPConfig(ipAddress, ipAddress, netMsk);
-      char macStr[5];                                                                        
-      snprintf(macStr, sizeof(macStr), "%04X", LoraMesher::getInstance().getLocalAddress()); 
+      char macStr[5];
+      snprintf(macStr, sizeof(macStr), "%04X", LoraMesher::getInstance().getLocalAddress());
       // Kết hợp SSID với MAC
       char ap_ssid[50];
       strncpy(ap_ssid, wifi_ap_ssid, sizeof(ap_ssid) - 1);
@@ -511,7 +560,7 @@ static int timeout()
   if (wifiStarted)
   {
     HandleWebUpdate();
-    return 500;
+    return 50;
   }
   return DURATION_NEVER;
 }

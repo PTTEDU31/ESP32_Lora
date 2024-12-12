@@ -315,9 +315,7 @@ extern bool pwmSerialDefined;
 #define GPIO_PIN_I2S_SCL UNDEF_PIN
 #define GPIO_PIN_I2S_LATCH UNDEF_PIN
 #endif
-// #define I2S_WS                              26
-// #define I2S_BCK                             25
-// #define I2S_DATA                            27
+
 
 #define RELAY_1                              129
 #define RELAY_2                              130

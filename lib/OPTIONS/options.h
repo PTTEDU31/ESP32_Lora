@@ -31,7 +31,7 @@ typedef struct _options
 
     // MQTT configuration
     char mqtt_server[65];       // MQTT server address (e.g., "192.168.1.26")
-    uint16_t mqtt_port;         // MQTT server port (e.g., 1883)
+    uint16_t  mqtt_port;         // MQTT server port (e.g., 1883)
     char mqtt_username[33];     // MQTT username
     char mqtt_password[65];     // MQTT password
     char mqtt_topic_sub[65];    // MQTT topic for subscribing

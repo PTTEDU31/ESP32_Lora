@@ -15,14 +15,14 @@
 
 #define OTA_VERSION_ID      4
 #define UID_LEN             6
-
+#define MAX_BUTON_ACTION           3
 typedef enum
 {
     connected,
     // tentative,        // RX only
     // awaitingModelId,  // TX only
+    disconnected, 
     connected_STA,
-    disconnected,
     MODE_STATES,
     // States below here are special mode states
     // noCrossfire,
@@ -46,13 +46,32 @@ enum {
     RADIO_TYPE_SX128x_LORA,
     RADIO_TYPE_SX128x_FLRC,
 };
-typedef enum {
-    NODE,
-    GATEWAY,
-} _isGateway;
+typedef enum : uint8_t {
+    ACTION_NONE,
+    ACTION_INCREASE_POWER,
+    ACTION_START_WIFI,
+    ACTION_BIND,
+    ACTION_BLE,
+    ACTION_RESET_REBOOT,
+
+    ACTION_LAST
+} action_e;
+typedef struct {
+    uint8_t     pressType:1,    // 0 short, 1 long
+                count:3,        // 1-8 click count for short, .5sec hold count for long
+                action:4;       // action to execute
+} button_action_t;
+
+typedef union {
+    struct {
+        uint8_t color;                  // RRRGGGBB
+        button_action_t actions[MAX_BUTON_ACTION];
+        uint8_t unused;
+    } val;
+    // uint32_t raw;
+} button_color_t;
 
 extern uint8_t UID[UID_LEN];
 extern connectionState_e connectionState;
 extern bool teamraceHasModelMatch;
-extern _isGateway isGateway;
 # define MAX_CONNECTION_TRY 10

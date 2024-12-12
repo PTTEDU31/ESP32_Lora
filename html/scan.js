@@ -722,7 +722,33 @@ function callback(title, msg, url, getdata, success) {
     xmlhttp.send(data);
   };
 }
+function saveMqttConfig(event) {
+  event.preventDefault(); // Ngăn chặn làm mới trang
+  const formData = new FormData(_('mqtt-config')); // Thu thập dữ liệu từ biểu mẫu
+  const data = Object.fromEntries(formData.entries()); // Chuyển đổi thành đối tượng JSON
 
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/mqtt-config', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        cuteAlert({
+          type: 'success',
+          title: 'MQTT Saved',
+          message: 'MQTT configuration saved successfully!',
+        });
+      } else {
+        cuteAlert({
+          type: 'error',
+          title: 'MQTT Save Failed',
+          message: 'An error occurred while saving MQTT configuration.',
+        });
+      }
+    }
+  };
+  xhr.send(JSON.stringify(data));
+}
 function setupNetwork(event) {
   if (_('nt0').checked) {
     callback('Set Home Network', 'An error occurred setting the home network', '/sethome?save', function() {
@@ -751,6 +777,7 @@ _('reset-model').addEventListener('click', callback('Reset Model Settings', 'An 
 _('reset-options').addEventListener('click', callback('Reset Runtime Options', 'An error occurred reseting runtime options', '/reset?options', null));
 
 _('sethome').addEventListener('submit', setupNetwork);
+_('mqtt-config').addEventListener('submit', saveMqttConfig);
 _('connect').addEventListener('click', callback('Connect to Home Network', 'An error occurred connecting to the Home network', '/connect', null));
 if (_('config')) {
   _('config').addEventListener('submit', callback('Set Configuration', 'An error occurred updating the configuration', '/config',
