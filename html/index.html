@@ -29,6 +29,7 @@
 @@if isTX:
 				<li id="button-tab"><a data-mui-toggle="tab" data-mui-controls="pane-justified-3">Buttons</a></li>
 @@end
+				<li	id="mqtt-tab"><a data-mui-toggle="tab" data-mui-controls="pane-justified-5">MQTT</a></li>
 				<li><a data-mui-toggle="tab" data-mui-controls="pane-justified-2">Update</a></li>
 			</ul>
 
@@ -367,6 +368,31 @@
 					<a id="connect" href="#">Connect to Home network: <span id="homenet"></span></a>
 				</div>
 			</div>
+			<div class="mui-tabs__pane" id="pane-justified-5">
+				<div class="mui-panel" id="mqtt-settings">
+					<h2>MQTT Configuration</h2>
+					<form id="mqtt-config" method="POST">
+					  <div class="mui-textfield">
+						<input type="text" id="mqtt_server" name="mqtt_server" placeholder="MQTT Server" />
+						<label for="mqtt_server">MQTT Server</label>
+					  </div>
+					  <div class="mui-textfield">
+						<input type="text" id="mqtt_port" name="mqtt_port" placeholder="MQTT Port" />
+						<label for="mqtt_port">MQTT Port</label>
+					  </div>
+					  <div class="mui-textfield">
+						<input type="text" id="mqtt_user" name="mqtt_user" placeholder="MQTT Username" />
+						<label for="mqtt_user">MQTT Username</label>
+					  </div>
+					  <div class="mui-textfield">
+						<input type="password" id="mqtt_pass" name="mqtt_pass" placeholder="MQTT Password" />
+						<label for="mqtt_pass">MQTT Password</label>
+					  </div>
+					  <button type="submit" id="save-mqtt" class="mui-btn mui-btn--primary">Save MQTT</button>
+					</form>
+				  </div>				  
+			</div>
+			
 		</div>
 	</div>
 	@@include("footer-template.html")

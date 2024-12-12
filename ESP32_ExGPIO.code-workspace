@@ -24,7 +24,13 @@
 			"regex": "cpp",
 			"cstdint": "cpp",
 			"*.inc": "cpp",
-			"new": "cpp"
+			"new": "cpp",
+			"exception": "cpp",
+			"memory_resource": "cpp",
+			"iosfwd": "cpp",
+			"sstream": "cpp",
+			"stop_token": "cpp",
+			"streambuf": "cpp"
 		}
 	}
 }
