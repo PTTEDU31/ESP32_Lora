@@ -126,6 +126,16 @@ typedef enum
     HARDWARE_misc_fan_speeds_count,
     HARDWARE_gsensor_stk8xxx,
     HARDWARE_thermal_lm75a,
+    HARDWARE_thermal_bmi280,
+    HARDWARE_thermal_aht20,
+    HARDWARE_thermal_aht20,
+    HARDWARE_current_ina216,
+    HARDWARE_current_ina319,
+    HARDWARE_light_bh1750,
+    
+
+
+
 
     // PWM
     HARDWARE_pwm_outputs,

@@ -170,16 +170,17 @@
 #define GPIO_PIN_FAN_SPEEDS_COUNT hardware_int(HARDWARE_misc_fan_speeds_count)
 
 #define HAS_GSENSOR
-#define HAS_GSENSOR_STK8xxx
-#define OPT_HAS_GSENSOR_STK8xxx hardware_flag(HARDWARE_gsensor_stk8xxx)
-#define OPT_HAS_GSENSOR OPT_HAS_GSENSOR_STK8xxx // If any of the sensors are present
-
 #define HAS_THERMAL
-#define HAS_THERMAL_LM75A
 #define OPT_HAS_THERMAL_LM75A hardware_flag(HARDWARE_thermal_lm75a)
-#define OPT_HAS_THERMAL OPT_HAS_THERMAL_LM75A // If any of the sensors are present
+#define OPT_HAS_THERMAL_BMI280 hardware_flag(HARDWARE_thermal_bmi280)
+#define OPT_HAS_THERMAL_AHT20 hardware_flag(HARDWARE_thermal_aht20)
+#define OPT_HAS_CURRENT_INA216 hardware_flag(HARDWARE_current_ina216)
+#define OPT_HAS_CURRENT_INA319 hardware_flag(HARDWARE_current_ina319)
+#define OPT_HAS_LIGHT_BH1750 hardware_flag(HARDWARE_light_bh1750)
 
-
+#define OPT_HAS_THERMAL (OPT_HAS_THERMAL_LM75A || OPT_HAS_THERMAL_BMI280)
+#define OPT_HAS_CURRENT (OPT_HAS_CURRENT_INA216 || OPT_HAS_CURRENT_INA319)
+#define OPT_HAS_LIGHT OPT_HAS_LIGHT_BH1750
 
 
 /*
