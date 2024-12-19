@@ -19,7 +19,7 @@
         "span": "cpp",
         "regex": "cpp",
         "cstdint": "cpp",
-        "*.inc": "cpp",
+        "*.inc": "bitbake",
         "new": "cpp",
         "memory": "cpp",
         "random": "cpp",
@@ -38,6 +38,21 @@
         "streambuf": "cpp",
         "system_error": "cpp",
         "tuple": "cpp",
-        "type_traits": "cpp"
-    }
+        "type_traits": "cpp",
+        "*.conf": "bitbake",
+        "iterator": "cpp",
+        "optional": "cpp",
+        "semaphore": "cpp",
+        "sstream": "cpp",
+        "stdexcept": "cpp",
+        "thread": "cpp"
+    },
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/sources/poky/bitbake/lib",
+        "${workspaceFolder}\\sources\\poky\\meta\\lib"
+    ],
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/sources/poky/bitbake/lib",
+        "${workspaceFolder}\\sources\\poky\\meta\\lib"
+    ]
 }

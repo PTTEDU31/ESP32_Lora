@@ -125,6 +125,8 @@ static const struct
     {HARDWARE_thermal_bmi280,"bmi280",BOOL},
     {HARDWARE_thermal_lm75a, "thermal_lm75a", BOOL},
     {HARDWARE_current_ina216,"ina216",BOOL},
+    {HARDWARE_current_ina219,"ina219",BOOL},
+    {HARDWARE_current_ina226,"ina226",BOOL},
     {HARDWARE_current_ina319,"ina319",BOOL},
     {HARDWARE_light_bh1750, "bh1750", BOOL},
     {HARDWARE_pwm_outputs, "pwm_outputs", ARRAY},

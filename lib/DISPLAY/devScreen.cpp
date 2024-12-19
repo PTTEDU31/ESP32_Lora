@@ -53,6 +53,6 @@ static int timeout()
 device_t Screen_device = {
     .initialize = initialize,
     .start = start,
-    .event = timeout,
+    .event = event,
     .timeout = timeout};
 #endif

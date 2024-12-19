@@ -1,5 +1,5 @@
 #include "mqttCommandService.h"
-#include "devMQTT.h"
+#include "MQTT.h"
 
 MqttCommandService::MqttCommandService() {
     // Send command to bluetooth

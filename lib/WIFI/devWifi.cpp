@@ -1,7 +1,7 @@
 #include "device.h"
 #include "devButton.h"
 #if defined(PLATFORM_ESP8266) || defined(PLATFORM_ESP32)
-#include "devMQTT.h"
+#include "MQTT.h"
 #include <DNSServer.h>
 #ifdef ESP32
 #include <AsyncTCP.h>

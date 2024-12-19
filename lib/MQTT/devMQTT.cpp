@@ -1,13 +1,11 @@
 #include "devMQTT.h"
-#include "common.h"
+#include "MQTT.h"
 #include "logging.h"
 #include "WiFi.h"
 #include "ArduinoJson.h"
 #include "options.h"
 #include <AsyncMqttClient.h>
 #include "loraMeshService.h"
-#define MQTT_HOST IPAddress(192, 168, 1, 10)
-#define MQTT_PORT 1883
 AsyncMqttClient mqttClient;
 
 void DEV_MQTT::connectToMqtt()
@@ -57,20 +55,8 @@ void onMqttConnect(bool sessionPresent)
   DBGLN("Connected to MQTT.");
   NodeBackpack->print("Session present: ");
   DBGLN("%d", sessionPresent);
-  uint16_t packetIdSub = mqttClient.subscribe("test/lol", 2);
-  NodeBackpack->print("Subscribing at QoS 2, packetId: ");
-  DBGLN("%d", packetIdSub);
-  mqttClient.publish("test/lol", 0, true, "test 1");
-  DBGLN("Publishing at QoS 0");
-  uint16_t packetIdPub1 = mqttClient.publish("test/lol", 1, true, "test 2");
-  NodeBackpack->print("Publishing at QoS 1, packetId: ");
-  DBGLN("%d", packetIdPub1);
-  uint16_t packetIdPub2 = mqttClient.publish("test/lol", 2, true, "test 3");
-  NodeBackpack->print("Publishing at QoS 2, packetId: ");
-  DBGLN("%d", packetIdPub2);
-  uint16_t packetIdPub3 = mqttClient.publish("test/lol", 2, true, LoRaMeshService::getInstance().getRoutingTable().c_str());
-  NodeBackpack->print("Publishing at QoS 2, packetId: ");
-  DBGLN("%d", packetIdPub3);
+  uint16_t packetIdSub = mqttClient.subscribe("form-server", 2);
+  DBGLN("Subscribing to topic 'form-server' at QoS 2, packetId: %d", packetIdSub);
 }
 void onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total)
 {
@@ -105,14 +91,23 @@ void onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties 
     NodeBackpack->println("  payload: (empty or null)");
   }
 }
+void onMqttSubscribe(uint16_t packetId, uint8_t qos)
+{
+  NodeBackpack->println("Subscribe acknowledged.");
+  NodeBackpack->print("  packetId: ");
+  NodeBackpack->println(packetId);
+  NodeBackpack->print("  qos: ");
+  NodeBackpack->println(qos);
+}
 
-void initialize()
+static void initialize()
 {
   mqttClient.onConnect(onMqttConnect);
   mqttClient.onMessage(onMqttMessage);
+  mqttClient.onSubscribe(onMqttSubscribe);
   mqttClient.setServer(firmwareOptions.mqtt_server, firmwareOptions.mqtt_port);
 }
-int timeout()
+static int timeout()
 {
   // Kiểm tra nếu MQTT client chưa kết nối
   if (!mqttClient.connected())

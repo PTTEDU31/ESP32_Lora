@@ -3,6 +3,7 @@
 #include "devLED.h"
 #include "devWIFI.h"
 #include "devButton.h"
+#include "devSensor.h"
 #include "devMQTT.h"
 #include "PWM.h"
 
@@ -23,7 +24,8 @@ device_affinity_t devices[] = {
     {&WIFI_device, 0},
     {&Button_device, 0},
     {&Screen_device, 0},
-    {&MQTT_device,0}};
+    {&MQTT_device,0},
+    {&Sensor_dev,1}};
 
 Stream *NodeUSB;
 Stream *NodeBackpack;

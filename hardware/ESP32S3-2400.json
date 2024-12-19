@@ -28,7 +28,7 @@
     "screen_sda": 41,
     "screen_type": 1,
     "screen_reversed": true,
-
+    "ina219":true,
     "use_backpack": true,
     "debug_backpack_baud": 115200,
     "debug_backpack_rx": 44,
