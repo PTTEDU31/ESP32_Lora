@@ -21,8 +21,8 @@ typedef enum
     connected,
     // tentative,        // RX only
     // awaitingModelId,  // TX only
-    disconnected, 
     connected_STA,
+    disconnected, 
     MODE_STATES,
     // States below here are special mode states
     // noCrossfire,

@@ -74,26 +74,28 @@ static struct
 };
 void WiFiEvent(WiFiEvent_t event)
 {
-    NodeBackpack->println("[WiFi-event] event: " + String(event));
-    switch (event)
-    {
-    case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-        NodeBackpack->println("WiFi connected");
-        NodeBackpack->println("IP address: " + WiFi.localIP().toString());
-        DEV_MQTT::getInstance().connectToMqtt();
-        if(GATEWAY)
-        LoRaMeshService::getInstance().setGateway();
-        break;
+  NodeBackpack->println("[WiFi-event] event: " + String(event));
+  switch (event)
+  {
+  case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+    NodeBackpack->println("WiFi connected");
+    NodeBackpack->println("IP address: " + WiFi.localIP().toString());
+    if (GATEWAY)
+      LoRaMeshService::getInstance().setGateway();
+    connectionState = connected_STA;
+    break;
 
-    case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-        NodeBackpack->println("WiFi lost connection");
-        LoRaMeshService::getInstance().removeGateway();
-        break;
+  case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+    NodeBackpack->println("WiFi lost connection");
+    LoRaMeshService::getInstance().removeGateway();
+    connectionState = disconnected;
+    break;
 
-    default:
-        NodeBackpack->println("Unhandled WiFi event: " + String(event));
-        break;
-    }
+  default:
+    connectionState = disconnected;
+    NodeBackpack->println("Unhandled WiFi event: " + String(event));
+    break;
+  }
 }
 void setWifiUpdateMode()
 {
@@ -105,7 +107,7 @@ static void startWiFi(unsigned long now)
   {
     return;
   }
-  if (connectionState < FAILURE_STATES)
+  if (connectionState < FAILURE_STATES && !GATEWAY)
     setWifiUpdateMode();
 
   DBGLN("Begin Webupdater");
@@ -445,6 +447,7 @@ static void startServices()
   server.on("/scan.js", WebUpdateSendContent);
   server.on("/networks.json", WebUpdateSendNetworks);
   server.on("/sethome", WebUpdateSetHome);
+  server.on("/access", WebUpdateAccessPoint);
   server.on("/mqtt-config", WebUpdateSetMQTT);
   server.onNotFound(WebUpdateHandleNotFound);
 
@@ -525,6 +528,7 @@ static void HandleWebUpdate()
       strncat(ap_ssid, "-", sizeof(wifi_ap_ssid) - strlen(wifi_ap_ssid) - 1);    // Thêm dấu "-"
       strncat(ap_ssid, macStr, sizeof(wifi_ap_ssid) - strlen(wifi_ap_ssid) - 1); // Thêm MAC
       WiFi.softAP(ap_ssid, wifi_ap_password);
+
       startServices();
       break;
     case WIFI_STA:
@@ -547,7 +551,8 @@ static void HandleWebUpdate()
       WiFi.setScanMethod(WIFI_ALL_CHANNEL_SCAN);
 #endif
       WiFi.begin(station_ssid, station_password);
-      startServices();
+      if (connectionState > disconnected )
+        startServices();
     default:
       break;
     }

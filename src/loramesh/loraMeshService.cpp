@@ -44,13 +44,15 @@ void LoRaMeshService::initLoraMesherService()
 
     // Initialize LoRaMesher
     // radio.begin(config);
-    if (radio.begin(config) !=  0)
+    if (radio.begin(config) != 0)
     {
+
         ESP_LOGW(LMS_TAG, "Failed to initialize LoRaMesher radio. Retrying...");
-        if(connectionState != hardwareUndefined)
-                connectionState = hardwareUndefined;
+        if (connectionState != radioFailed)
+            connectionState = radioFailed;
         return;
     }
+    connectionState = connected;
 
     // Create the receive task and add it to the LoRaMesher
     createReceiveMessages();
@@ -187,7 +189,12 @@ String LoRaMeshService::getRoutingTable()
         {
             RouteNode *routeNode = routingTableList->getCurrent();
             NetworkNode node = routeNode->networkNode;
-            routingTable += String(node.address) + " (" + String(node.metric) + ") - Via: " + String(routeNode->via) + "\n";
+            String addr = String(node.address, HEX);
+            addr.toUpperCase();
+            String via =String(routeNode->via,HEX);
+            via.toUpperCase();
+
+            routingTable += addr + " (" + String(node.metric) + ") - Via: " + via + "\n";
         } while (routingTableList->next());
     }
     else

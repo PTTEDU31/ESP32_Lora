@@ -43,7 +43,7 @@
     "GPRS_baud": 115200,
     "GPRS_rx": 10,
     "GPRS_tx": 11,
-    "i2s_scl": 35,
-    "i2s_sda": 36,
-    "i2s_latch": 37
+    "i2s_scl": 38,
+    "i2s_sda": 39,
+    "i2s_latch": 42
 }

@@ -37,7 +37,7 @@ void OLEDDisplay::display_print_addr()
 
 void OLEDDisplay::display_wifi_status()
 {
-     char macStr[5];
+    char macStr[5];
     snprintf(macStr, sizeof(macStr), "%04X", LoRaMeshService::getInstance().getLocalAddress());
     u8g2->clearBuffer();
     u8g2->setFont(u8g2_font_6x10_tr);
@@ -80,6 +80,8 @@ void OLEDDisplay::display_wifi_status()
     u8g2->print(connectionState);
     u8g2->setCursor(60, 48);
     u8g2->print(ESP.getFreeHeap());
+    u8g2->setCursor(60, 64);
+    u8g2->print(ESP.getFreePsram());
     u8g2->sendBuffer();
 
 }

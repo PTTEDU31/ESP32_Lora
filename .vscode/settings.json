@@ -45,7 +45,8 @@
         "semaphore": "cpp",
         "sstream": "cpp",
         "stdexcept": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "utility": "cpp"
     },
     "python.autoComplete.extraPaths": [
         "${workspaceFolder}/sources/poky/bitbake/lib",

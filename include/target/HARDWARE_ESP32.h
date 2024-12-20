@@ -179,8 +179,7 @@
 #define OPT_HAS_CURRENT_INA226 hardware_flag(HARDWARE_current_ina226)
 #define OPT_HAS_CURRENT_INA319 hardware_flag(HARDWARE_current_ina319)
 #define OPT_HAS_LIGHT_BH1750 hardware_flag(HARDWARE_light_bh1750)
-#define OPT_HAS_BARO
-#define OPT_HAS_THERMAL (OPT_HAS_THERMAL_LM75A || OPT_HAS_THERMAL_BMI280)
+#define OPT_HAS_THERMAL (OPT_HAS_THERMAL_LM75A ||                                                                                                                                            OPT_HAS_THERMAL_BMI280)
 #define OPT_HAS_CURRENT (OPT_HAS_CURRENT_INA216 || OPT_HAS_CURRENT_INA319 || OPT_HAS_CURRENT_INA226 || OPT_HAS_CURRENT_INA219)
 #define OPT_HAS_LIGHT OPT_HAS_LIGHT_BH1750
 

@@ -7,7 +7,7 @@
 #include <AsyncMqttClient.h>
 #include "loraMeshService.h"
 AsyncMqttClient mqttClient;
-
+static bool en_connected = 0;
 void DEV_MQTT::connectToMqtt()
 {
   DBGLN("Connecting to MQTT...");
@@ -55,8 +55,8 @@ void onMqttConnect(bool sessionPresent)
   DBGLN("Connected to MQTT.");
   NodeBackpack->print("Session present: ");
   DBGLN("%d", sessionPresent);
-  uint16_t packetIdSub = mqttClient.subscribe("form-server", 2);
-  DBGLN("Subscribing to topic 'form-server' at QoS 2, packetId: %d", packetIdSub);
+  uint16_t packetIdSub = mqttClient.subscribe(firmwareOptions.mqtt_topic_sub, 2);
+  DBGLN("Subscribing to topic %s at QoS 2, packetId: %d", firmwareOptions.mqtt_topic_sub, packetIdSub);
 }
 void onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total)
 {
@@ -105,14 +105,41 @@ static void initialize()
   mqttClient.onConnect(onMqttConnect);
   mqttClient.onMessage(onMqttMessage);
   mqttClient.onSubscribe(onMqttSubscribe);
+  char buffer[5];
+  sprintf(buffer, "%04X", LoRaMeshService::getInstance().getLocalAddress());
+  mqttClient.setClientId(buffer);
   mqttClient.setServer(firmwareOptions.mqtt_server, firmwareOptions.mqtt_port);
 }
+static int start()
+{
+  return DURATION_NEVER;
+}
+static int event()
+{
+  if (connectionState == connected_STA)
+  {
+
+    DBGLN("Connecting to MQTT...");
+    en_connected = 1;
+    return DURATION_IMMEDIATELY;
+  }
+  else if (connectionState == disconnected)
+  {
+    mqttClient.clearQueue();
+    return DURATION_NEVER;
+  }
+  if (en_connected == 1)
+    return DURATION_IMMEDIATELY;
+  return DURATION_NEVER;
+}
+
 static int timeout()
 {
   // Kiểm tra nếu MQTT client chưa kết nối
   if (!mqttClient.connected())
   {
     DBGLN("MQTT client is not connected, skipping publish.");
+    mqttClient.connect();
     return 20000;
   }
 
@@ -142,8 +169,7 @@ static int timeout()
 
 device_t MQTT_device = {
     .initialize = initialize,
-    .start = []() -> int
-    { return DURATION_IMMEDIATELY; }, // Lambda function
-    .event = nullptr,
+    .start = start,
+    .event = event,
     .timeout = timeout,
 };
