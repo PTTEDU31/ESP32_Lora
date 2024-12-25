@@ -38,12 +38,6 @@ Stream *NodeBackpack;
 
 LoRaMeshService &loraMeshService = LoRaMeshService::getInstance();
 
-void initLoRaMesher()
-{
-    // Init LoRaMesher
-    loraMeshService.initLoraMesherService();
-}
-
 DEV_MQTT &mqttService = DEV_MQTT::getInstance();
 SensorService &sensorService = SensorService::getInstance();
 MessageManager &manager = MessageManager::getInstance();
@@ -148,18 +142,23 @@ void setup()
         setupTarget();
         devicesRegister(devices, ARRAY_SIZE(devices));
         devicesInit();
-        devicesStart();
-    }
-    pwm.init_pwm();
-    // Initialize Manager
-    initManager();
+        DBGLN("Initialised devices");
+        bool init_success;
+        init_success = pwm.init_pwm();
+        // Initialize Manager
+        initManager();
 
-    ESP_LOGV(TAG, "Heap after initManager: %d", ESP.getFreeHeap());
-    initLoRaMesher();
-    ESP_LOGV(TAG, "Heap after initLoRaMesher: %d", ESP.getFreeHeap());
-    NodeUSB->print("Commnad:");
-    NodeUSB->println(manager.getAvailableCommands());
+        ESP_LOGV(TAG, "Heap after initManager: %d", ESP.getFreeHeap());
+        init_success = loraMeshService.initLoraMesherService();
+        ESP_LOGV(TAG, "Heap after initLoRaMesher: %d", ESP.getFreeHeap());
+        NodeUSB->print("Commnad:");
+        NodeUSB->println(manager.getAvailableCommands());
+        if (!init_success)
+            setConnectionState(radioFailed);
+    }
+    devicesStart();
 }
+
 #include "WiFi.h"
 void loop()
 {

@@ -11,20 +11,26 @@ size_t sensorMessageId = 0;
 #include "PHSensor/PHSensor.h"
 PHSensor *phSensor = new PHSensor();
 
-void SensorService::initialize()
+bool SensorService::initialize()
 {
 #ifdef OPT_HAS_CURRENT
 #ifdef OPT_HAS_CURRENT_INA219
     // devCurrent = new devINA219();
     if (!INA.begin())
+    {
         DBGLN("INA219 init false");
+        return 0;
+    }
+    return 1;
+
 #endif
 
 #endif
 }
 
-String SensorService::getJSON(DataMessage* message) {
-    MeasurementMessage* sensorMessage = (MeasurementMessage*) message;
+String SensorService::getJSON(DataMessage *message)
+{
+    MeasurementMessage *sensorMessage = (MeasurementMessage *)message;
 
     StaticJsonDocument<2000> doc;
 
@@ -41,6 +47,13 @@ String SensorService::getJSON(DataMessage* message) {
 static int stat()
 {
     return 60000;
+}
+DataMessage *SensorService::getDataMessage(JsonObject data)
+{
+    MeasurementMessage *measurement = new MeasurementMessage();
+    measurement->deserialize(data);
+    measurement->messageSize = sizeof(MeasurementMessage) - sizeof(DataMessageGeneric);
+    return ((DataMessage *)measurement);
 }
 
 static int timeout()

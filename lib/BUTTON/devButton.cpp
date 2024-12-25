@@ -75,8 +75,9 @@ static void handlePress(uint8_t button, bool longPress, uint8_t count)
         }
     }
 }
-static void initialize()
+static bool initialize()
 {
+    return GPIO_PIN_BUTTON != UNDEF_PIN || GPIO_PIN_BUTTON2 != UNDEF_PIN;
 }
 static int start()
 {
@@ -132,4 +133,5 @@ device_t Button_device = {
     .initialize = initialize,
     .start = start,
     .event = event,
-    .timeout = timeout};
+    .timeout = timeout,
+    .subscribe = EVENT_ARM_FLAG_CHANGED | EVENT_CONNECTION_CHANGED};

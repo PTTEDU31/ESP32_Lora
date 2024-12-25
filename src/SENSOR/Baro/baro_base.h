@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
-
-class BaroBase
+#include "../Sensor_base.h"
+class BaroBase : public Sensor
 {
 public:
     static const int32_t ALTITUDE_INVALID = 0x7fffffff;
@@ -12,7 +12,6 @@ public:
 
     BaroBase() : m_initialized(false), m_altitudeHome(ALTITUDE_INVALID) {}
 
-    virtual void initialize() = 0;
     // Return expected duration of pressure measurement (ms)
     virtual uint8_t getPressureDuration() = 0;
     // Start reading pressure
@@ -35,6 +34,8 @@ public:
 protected:
     bool m_initialized;
     int32_t m_altitudeHome;
+    float temperature = 0.0; // Nhiệt độ (°C)
+    float pressure = 0.0;    // Áp suất (hPa)
 };
 
 class BaroI2CBase : public BaroBase

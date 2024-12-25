@@ -7,7 +7,7 @@ static const char *LMS_TAG = "LoRaMeshService";
 SPIClass newSPI(HSPI);
 #endif
 
-void LoRaMeshService::initLoraMesherService()
+bool LoRaMeshService::initLoraMesherService()
 {
 #ifdef LORA_ENABLE
     LoraMesher::LoraMesherConfig config = LoraMesher::LoraMesherConfig();
@@ -48,11 +48,8 @@ void LoRaMeshService::initLoraMesherService()
     {
 
         ESP_LOGW(LMS_TAG, "Failed to initialize LoRaMesher radio. Retrying...");
-        if (connectionState != radioFailed)
-            connectionState = radioFailed;
-        return;
+            return 0;
     }
-    connectionState = connected;
 
     // Create the receive task and add it to the LoRaMesher
     createReceiveMessages();
@@ -61,6 +58,8 @@ void LoRaMeshService::initLoraMesherService()
     radio.start();
 
     ESP_LOGV(LMS_TAG, "LoraMesher initialized");
+    setConnectionState(connected);
+    return 1;
 #endif
 }
 

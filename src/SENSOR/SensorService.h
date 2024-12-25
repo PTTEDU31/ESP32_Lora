@@ -9,8 +9,9 @@ public:
         static SensorService instance;
         return instance;
     }
-    static void initialize();
+    static bool initialize();
     String getJSON(DataMessage *message);
+    DataMessage *getDataMessage(JsonObject data);
     // void processReceivedMessage(messagePort port, DataMessage *message);
 
     SensorCommandService *sensorCommandService = new SensorCommandService();

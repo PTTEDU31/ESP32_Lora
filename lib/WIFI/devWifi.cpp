@@ -99,7 +99,7 @@ void WiFiEvent(WiFiEvent_t event)
 }
 void setWifiUpdateMode()
 {
-  connectionState = wifiUpdate;
+  setConnectionState(wifiUpdate);
 }
 static void startWiFi(unsigned long now)
 {
@@ -132,7 +132,7 @@ static void startWiFi(unsigned long now)
 }
 
 // Hàm khởi tạo Wi-Fi
-static void initialize()
+static bool initialize()
 {
   wifiStarted = false;
   WiFi.disconnect(true);
@@ -145,6 +145,7 @@ static void initialize()
   registerButtonFunction(ACTION_START_WIFI, []()
                          { setWifiUpdateMode(); });
   WiFi.onEvent(WiFiEvent);
+  return true;
 }
 
 // Hàm bắt đầu Wi-Fi
@@ -573,7 +574,6 @@ device_t WIFI_device = {
     .start = start,
     .event = event,
     .timeout = timeout,
-    .id = deviceId::WiFi,
-};
+    .subscribe = EVENT_CONNECTION_CHANGED};
 
 #endif // Kết thúc kiểm tra PLATFORM_ESP8266 || PLATFORM_ESP32

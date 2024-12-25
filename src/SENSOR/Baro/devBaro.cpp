@@ -35,14 +35,6 @@ static bool Baro_Detect()
             baro = new BMP280();
             return true;
         }
-        // Untested
-        // if (BMP085::detect())
-        // {
-        //     DBGLN("Detected baro: BMP085");
-        //     baro = new BMP085();
-        //     return true;
-        // }
-        // DBGLN("No baro detected");
     } // I2C
 #endif
     return false;

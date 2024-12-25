@@ -18,9 +18,9 @@ EX_PWM pwm;
 EX_PWM::EX_PWM()
 {
 }
-void EX_PWM::init_pwm()
+bool EX_PWM::init_pwm()
 {
-    i2s_init();
+    return i2s_init();
 }
 // Hàm thiết lập chu kỳ PWM (duty) cho chân cụ thể
 void EX_PWM::set_pwm_duty(int pin, int duty) {

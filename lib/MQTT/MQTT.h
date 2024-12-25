@@ -11,7 +11,7 @@ public:
         static DEV_MQTT instance;
         return instance;
     }
-    static void initialize();
+    static bool initialize();
 
     bool isInitialized()
     {

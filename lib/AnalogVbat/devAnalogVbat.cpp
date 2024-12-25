@@ -34,6 +34,10 @@ void Vbat_enableSlowUpdate(bool enable)
 {
     vbatUpdateScale = enable ? 2 : 1;
 }
+static bool initialize()
+{
+    return GPIO_ANALOG_VBAT != UNDEF_PIN;
+}
 
 static int start()
 {
@@ -55,7 +59,7 @@ static int start()
             atten -= (ADC_11db + 1);
             int8_t channel = digitalPinToAnalogChannel(GPIO_ANALOG_VBAT);
             adc_unit_t unit = (channel > (SOC_ADC_MAX_CHANNEL_NUM - 1)) ? ADC_UNIT_2 : ADC_UNIT_1;
-#if defined(PLATFORM_ESP32_S3) 
+#if defined(PLATFORM_ESP32_S3)
             adc_cali_curve_fitting_config_t cali_config = {
                 .unit_id = unit,
                 .chan = (adc_channel_t)channel,
@@ -124,11 +128,10 @@ static int timeout()
 }
 
 device_t AnalogVbat_device = {
-    .initialize = nullptr,
+    .initialize = initialize,
     .start = start,
     .event = nullptr,
     .timeout = timeout,
-    .id = deviceId::nodev,
-};
+    .subscribe = EVENT_NONE};
 
 #endif /* if USE_ANALOG_VCC */
