@@ -101,9 +101,13 @@ void i2s_init(void)
 	}
 	ESP_ERROR_CHECK(err);
 
-	// Cấu hình chuẩn cho kênh truyền (TX)
+#define I2S_CLK_CONFIG(rate) {              \
+	.sample_rate_hz = rate,                 \
+	.clk_src = I2S_CLK_SRC_PLL_160M,        \
+	.mclk_multiple = I2S_MCLK_MULTIPLE_128, \
+}
 	i2s_std_config_t tx_std_cfg = {
-		.clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(250000),
+		.clk_cfg = I2S_CLK_CONFIG(250000),
 		.slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_MONO),
 		.gpio_cfg = {
 			.mclk = I2S_GPIO_UNUSED,
@@ -137,7 +141,7 @@ void i2s_init(void)
 	ESP_ERROR_CHECK(i2s_channel_register_event_callback(tx_chan, &cbs, NULL));
 
 	// Tạo task nạp dữ liệu vào bộ đệm
-	BaseType_t task_created = xTaskCreatePinnedToCore(load_buf, "Load_buf", 10000, nullptr, 1, nullptr, 1);
+	BaseType_t task_created = xTaskCreatePinnedToCore(load_buf, "Load_buf", 1000, nullptr, 1, nullptr, 1);
 	if (task_created != pdPASS)
 	{
 		ESP_LOGE(TAG, "Không thể tạo task 'Load_buf'");

@@ -55,6 +55,7 @@ static int start()
             atten -= (ADC_11db + 1);
             int8_t channel = digitalPinToAnalogChannel(GPIO_ANALOG_VBAT);
             adc_unit_t unit = (channel > (SOC_ADC_MAX_CHANNEL_NUM - 1)) ? ADC_UNIT_2 : ADC_UNIT_1;
+#if defined(PLATFORM_ESP32_S3) 
             adc_cali_curve_fitting_config_t cali_config = {
                 .unit_id = unit,
                 .chan = (adc_channel_t)channel,
@@ -63,7 +64,15 @@ static int start()
             };
 
             // Tạo handle hiệu chuẩn bằng scheme line-fitting
-            esp_err_t ret = adc_cali_create_scheme_curve_fitting(&cali_config,&adc_cali_handle);
+            esp_err_t ret = adc_cali_create_scheme_curve_fitting(&cali_config, &adc_cali_handle);
+#else
+            adc_cali_line_fitting_config_t cali_config = {
+                .unit_id = unit,
+                .atten = (adc_atten_t)atten,
+                .bitwidth = ADC_BITWIDTH_12,
+            };
+            esp_err_t ret = adc_cali_create_scheme_line_fitting(&cali_config, &adc_cali_handle);
+#endif
         }
         analogSetPinAttenuation(GPIO_ANALOG_VBAT, (adc_attenuation_t)atten);
     }

@@ -1,3 +1,4 @@
+#pragma once
 #include "mqttCommandService.h"
 #include "messageService.h"
 
@@ -10,7 +11,7 @@ public:
         static DEV_MQTT instance;
         return instance;
     }
-    void initMqtt(String localName);
+    static void initialize();
 
     bool isInitialized()
     {
@@ -21,9 +22,7 @@ public:
     static bool writeToMqtt(String message);
     static bool writeToMqtt(DataMessage *message);
     bool isMQTTConnected();
-
-    void processReceivedMessageFromMQTT(String &topic, String &payload);
-
+    virtual void processReceivedMessage(messagePort port, DataMessage *message);
     MqttCommandService *mqttCommandService = new MqttCommandService();
 
 private:
@@ -31,5 +30,5 @@ private:
     {
         commandService = mqttCommandService;
     };
-    bool initialized = false;
+    static bool initialized; // Khai báo tĩnh
 };

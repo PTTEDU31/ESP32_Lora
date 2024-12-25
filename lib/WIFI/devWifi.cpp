@@ -88,11 +88,11 @@ void WiFiEvent(WiFiEvent_t event)
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
     NodeBackpack->println("WiFi lost connection");
     LoRaMeshService::getInstance().removeGateway();
-    connectionState = disconnected;
+    connectionState = disconnected_STA;
     break;
 
   default:
-    connectionState = disconnected;
+    // connectionState = disconnected;
     NodeBackpack->println("Unhandled WiFi event: " + String(event));
     break;
   }
@@ -157,7 +157,7 @@ static int start()
 static int event()
 {
   // // Kiểm tra trạng thái kết nối và điều kiện để bật Wi-Fi
-  if (connectionState == wifiUpdate || connectionState > FAILURE_STATES)
+  if (connectionState == wifiUpdate || connectionState == disconnected_STA || connectionState == connected_STA || connectionState > FAILURE_STATES || GATEWAY)
   {
     if (!wifiStarted)
     {
@@ -528,7 +528,6 @@ static void HandleWebUpdate()
       strncat(ap_ssid, "-", sizeof(wifi_ap_ssid) - strlen(wifi_ap_ssid) - 1);    // Thêm dấu "-"
       strncat(ap_ssid, macStr, sizeof(wifi_ap_ssid) - strlen(wifi_ap_ssid) - 1); // Thêm MAC
       WiFi.softAP(ap_ssid, wifi_ap_password);
-
       startServices();
       break;
     case WIFI_STA:
@@ -546,13 +545,12 @@ static void HandleWebUpdate()
       WiFi.setOutputPower(13.5);
       WiFi.setPhyMode(WIFI_PHY_MODE_11N);
 #elif defined(PLATFORM_ESP32)
-      WiFi.setTxPower(WIFI_POWER_19_5dBm);
+      WiFi.setTxPower(WIFI_POWER_21dBm);
       WiFi.setSortMethod(WIFI_CONNECT_AP_BY_SIGNAL);
       WiFi.setScanMethod(WIFI_ALL_CHANNEL_SCAN);
 #endif
       WiFi.begin(station_ssid, station_password);
-      if (connectionState > disconnected )
-        startServices();
+      startServices();
     default:
       break;
     }

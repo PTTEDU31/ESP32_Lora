@@ -1,5 +1,6 @@
 #include "messageManager.h"
-
+#include "MQTT.h"
+#include "logging.h"
 static const char* MANAGER_TAG = "MANAGER";
 
 void MessageManager::init() {
@@ -121,14 +122,14 @@ String MessageManager::printDataMessageHeader(String title, DataMessage* message
     String json;
     serializeJson(doc, json);
 
-    ESP_LOGI(MANAGER_TAG, "%s", json.c_str());
-
+    // ESP_LOGI(MANAGER_TAG, "%s", json.c_str());
+    DBGLN("printDAtaMessage: %s", json.c_str());
     return json;
 }
 
 void MessageManager::processReceivedMessage(messagePort port, DataMessage* message) {
     printDataMessageHeader("Received", message);
-
+    DBGLN("processReceivedMessage");
     // TODO: Add a list to track the messages already received to avoid loops and duplicates
 
     if (message->addrDst != 0 && message->addrDst != LoRaMeshService::getInstance().getLocalAddress()) {
@@ -146,7 +147,7 @@ void MessageManager::processReceivedMessage(messagePort port, DataMessage* messa
     }
 }
 
-void MessageManager::sendMessage(messagePort port, DataMessage* message) {
+void MessageManager:: sendMessage(messagePort port, DataMessage* message) {
     switch (port) {
         case LoRaMeshPort:
             sendMessageLoRaMesher(message);
@@ -174,11 +175,11 @@ void MessageManager::sendMessageLoRaMesher(DataMessage* message) {
 }
 
 void MessageManager::sendMessageMqtt(DataMessage* message) {
-    // MqttService& mqtt = MqttService::getInstance();
-    // if (mqtt.isInitialized() && mqtt.writeToMqtt(message)) {
-    //     ESP_LOGI(MANAGER_TAG, "Message sent to MQTT");
-    //     return;
-    // }
+    DEV_MQTT& mqtt = DEV_MQTT::getInstance();
+    if ((mqtt.isInitialized() && mqtt.writeToMqtt(message) )|| GATEWAY) {
+        ESP_LOGI(MANAGER_TAG, "Message sent to MQTT");
+        return;
+    }
 
     LoRaMeshService& mesher = LoRaMeshService::getInstance();
     mesher.sendClosestGateway(message);

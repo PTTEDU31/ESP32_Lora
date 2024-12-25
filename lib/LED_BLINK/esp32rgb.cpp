@@ -37,7 +37,11 @@ ESP32S3LedDriver::~ESP32S3LedDriver()
 {
     heap_caps_free(out_buffer);
 }
-
+#define I2S_CLK_CONFIG(rate) {              \
+    .sample_rate_hz = rate,                 \
+    .clk_src = I2S_CLK_SRC_PLL_160M,         \
+    .mclk_multiple = I2S_MCLK_MULTIPLE_128, \
+}
 void ESP32S3LedDriver::Begin()
 {
     // i2s_config_t i2s_config = {
@@ -76,8 +80,9 @@ void ESP32S3LedDriver::Begin()
         return;
     }
     ESP_ERROR_CHECK(err);
+
     i2s_std_config_t i2s_std_cfg = {
-        .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(520833),
+        .clk_cfg = I2S_CLK_CONFIG(416000),
         .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,

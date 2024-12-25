@@ -3,8 +3,8 @@
 #include "devLED.h"
 #include "devWIFI.h"
 #include "devButton.h"
-#include "devBaro.h"
 #include "devMQTT.h"
+#include "SENSOR/devSensor.h"
 #include "PWM.h"
 
 #if defined(PLATFORM_ESP32)
@@ -27,7 +27,7 @@ device_affinity_t devices[] = {
 #ifdef GATEWAY
     {&MQTT_device, 0},
 #endif
-    {&Baro_device}};
+    {&Sensor_dev, 0}};
 
 Stream *NodeUSB;
 Stream *NodeBackpack;
@@ -36,7 +36,6 @@ Stream *NodeBackpack;
  * Setup GPIOs or other hardware, config not yet loaded
  ***/
 
-#pragma region LoRaMesher
 LoRaMeshService &loraMeshService = LoRaMeshService::getInstance();
 
 void initLoRaMesher()
@@ -45,19 +44,20 @@ void initLoRaMesher()
     loraMeshService.initLoraMesherService();
 }
 
-#pragma endregion
-#pragma region Manager
-
+DEV_MQTT &mqttService = DEV_MQTT::getInstance();
+SensorService &sensorService = SensorService::getInstance();
 MessageManager &manager = MessageManager::getInstance();
-
 void initManager()
 {
     manager.init();
     ESP_LOGV(TAG, "Manager initialized");
     manager.addMessageService(&loraMeshService);
     ESP_LOGV(TAG, "LoRaMesher service added to manager");
+    manager.addMessageService(&mqttService);
+    ESP_LOGV(TAG, "MQTT service added to manager");
+    manager.addMessageService(&sensorService);
+    ESP_LOGV(TAG, "MQTT service added to manager");
 }
-#pragma endregion
 
 #if defined(PLATFORM_ESP32_S3)
 #include "USB.h"

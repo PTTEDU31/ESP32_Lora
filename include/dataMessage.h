@@ -51,8 +51,8 @@ public:
     }
 
     void serialize(JsonObject& doc) {
-        // doc["appPortDst"] = appPortDst;
-        // doc["appPortSrc"] = appPortSrc;
+        doc["appPortDst"] = appPortDst;
+        doc["appPortSrc"] = appPortSrc;
         doc["messageId"] = messageId;
         doc["addrSrc"] = addrSrc;
         doc["addrDst"] = addrDst;

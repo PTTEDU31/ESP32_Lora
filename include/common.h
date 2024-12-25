@@ -22,6 +22,7 @@ typedef enum
     // tentative,        // RX only
     // awaitingModelId,  // TX only
     connected_STA,
+    disconnected_STA,
     disconnected, 
     MODE_STATES,
     // States below here are special mode states
