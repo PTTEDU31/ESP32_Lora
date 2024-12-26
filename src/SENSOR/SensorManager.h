@@ -8,14 +8,14 @@
 
 class SensorManager {
 private:
-    std::vector<std::shared_ptr<Sensor>> sensors;
+    std::vector<std::shared_ptr<Sensor_base>> sensors;
 
     // Detect sensor by address
-    std::shared_ptr<Sensor> detectSensor(uint8_t address);
+    std::shared_ptr<Sensor_base> detectSensor(uint8_t address);
 
 public:
     void detectAndAddSensors(); // Automatically detect and add sensors
-    void addSensor(std::shared_ptr<Sensor> sensor);
+    void addSensor(std::shared_ptr<Sensor_base> sensor);
     void beginAll();
     // void updateAll();
     void serializeAll(JsonArray& sensorArray);

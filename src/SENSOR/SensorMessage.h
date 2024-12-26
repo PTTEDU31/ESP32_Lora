@@ -1,9 +1,11 @@
 #include "dataMessage.h"
 #include "PHSensor/PHSensor.h"
+#include "./Sensor_base.h"
 class MeasurementMessage : public DataMessageGeneric
 {
 public:
     PHSensorMessage phSensorMessage;
+    Sensor_base *baro;
     void serialize(JsonObject &doc)
     {
         // Create a data object
@@ -35,6 +37,7 @@ public:
 
         // // Add the PH sensor data to the JSON object
         phSensorMessage.serialize(measurements);
+        // baro->serialize(measurements);
 
     }
 };

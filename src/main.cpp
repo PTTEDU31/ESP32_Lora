@@ -27,7 +27,8 @@ device_affinity_t devices[] = {
 #ifdef GATEWAY
     {&MQTT_device, 0},
 #endif
-    {&Sensor_dev, 0}};
+    {&Sensor_dev, 0},
+    {&Send_message,0}};
 
 Stream *NodeUSB;
 Stream *NodeBackpack;
@@ -149,7 +150,12 @@ void setup()
         initManager();
 
         ESP_LOGV(TAG, "Heap after initManager: %d", ESP.getFreeHeap());
-        init_success = loraMeshService.initLoraMesherService();
+        if (loraMeshService.initLoraMesherService())
+        {
+            init_success = false;
+            setConnectionState(hardwareUndefined);
+        }
+
         ESP_LOGV(TAG, "Heap after initLoRaMesher: %d", ESP.getFreeHeap());
         NodeUSB->print("Commnad:");
         NodeUSB->println(manager.getAvailableCommands());

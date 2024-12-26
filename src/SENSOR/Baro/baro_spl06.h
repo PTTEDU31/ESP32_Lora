@@ -19,6 +19,8 @@ public:
     uint8_t getTemperatureDuration();
     void startTemperature();
     int32_t getTemperature();
+    void serialize(JsonArray& doc);
+
 protected:
     // 32x Pressure + 8x Temperature = 70ms per update
     // 4x=8.4ms/2.5PaRMS, 8x=14.8ms, 16x=27.6ms/1.2Pa, 32x=53.2ms/0.9Pa, 64x=104.4ms/0.5Pa
@@ -28,6 +30,7 @@ protected:
     uint8_t oversampleToRegVal(const uint8_t oversamples) const;
     int32_t oversampleToScaleFactor(const uint8_t oversamples) const;
     float m_temperatureLast; // last uncompensated temperature value
+    float m_pressureLast; // last uncompensated temperature value
 
     struct tagCalibrationData
     {
@@ -41,5 +44,4 @@ protected:
         int16_t c21;
         int16_t c30;
     } m_calib; // calibration data, if initialized
-
 };

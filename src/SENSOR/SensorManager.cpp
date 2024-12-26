@@ -25,7 +25,7 @@ void SensorManager::detectAndAddSensors() {
     }
 }
 
-void SensorManager::addSensor(std::shared_ptr<Sensor> sensor) {
+void SensorManager::addSensor(std::shared_ptr<Sensor_base> sensor) {
     sensors.push_back(sensor);
 }
 
@@ -43,7 +43,6 @@ void SensorManager::beginAll() {
 
 void SensorManager::serializeAll(JsonArray& sensorArray) {
     for (const auto& sensor : sensors) {
-        JsonObject sensorObj = sensorArray.createNestedObject();
-        sensor->serialize(sensorObj);
+        sensor->serialize(sensorArray); // Gọi trực tiếp serialize từ từng cảm biến
     }
 }

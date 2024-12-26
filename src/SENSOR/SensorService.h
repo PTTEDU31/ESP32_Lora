@@ -11,14 +11,14 @@ public:
     }
     static bool initialize();
     String getJSON(DataMessage *message);
-    DataMessage *getDataMessage(JsonObject data);
     // void processReceivedMessage(messagePort port, DataMessage *message);
 
     SensorCommandService *sensorCommandService = new SensorCommandService();
-
+    DataMessage* getDataMessage(JsonObject data);
 private:
     SensorService() : MessageService(SensorApp, "Sensor")
     {
         commandService = sensorCommandService;
     };
+
 };

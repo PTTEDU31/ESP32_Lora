@@ -144,7 +144,7 @@ uint32_t SPL06::getPressure()
     // Adjust for calibration and temperature
     const float pressure_cal = (float)m_calib.c00 + p_raw_sc * ((float)m_calib.c10 + p_raw_sc * ((float)m_calib.c20 + p_raw_sc * m_calib.c30));
     const float p_temp_comp = m_temperatureLast * ((float)m_calib.c01 + p_raw_sc * ((float)m_calib.c11 + p_raw_sc * m_calib.c21));
-
+    m_pressureLast = (pressure_cal + p_temp_comp) * 10.0;
     return (pressure_cal + p_temp_comp) * 10.0;
 }
 
@@ -164,4 +164,16 @@ bool SPL06::detect()
     m_address = SPL06_I2C_ADDR_ALT;
     readRegister(SPL06_CHIP_ID_REG, &chipid, sizeof(chipid));
     return chipid == SPL06_DEFAULT_CHIP_ID;
+}
+
+void SPL06::serialize(JsonArray& doc) {
+    // Thêm thông tin nhiệt độ vào JSON
+    JsonObject tempObj = doc.createNestedObject();
+    tempObj["measurement"] = static_cast<float>(m_temperatureLast) / 100.0; // Nhiệt độ (°C)
+    tempObj["type"] = "SPL06_Temperature";                                  // Loại dữ liệu nhiệt độ
+
+    // Thêm thông tin áp suất vào JSON
+    JsonObject pressureObj = doc.createNestedObject();
+    pressureObj["measurement"] = static_cast<float>(m_pressureLast) / 10.0; // Áp suất (hPa)
+    pressureObj["type"] = "SPL06_Pressure";                                 // Loại dữ liệu áp suất
 }

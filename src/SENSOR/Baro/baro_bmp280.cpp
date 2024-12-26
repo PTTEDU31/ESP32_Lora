@@ -1,7 +1,7 @@
 #include "baro_bmp280.h"
 #include <Arduino.h>
 #include "logging.h"
-
+#include <ArduinoJson.h>
 void BMP280::initialize()
 {
     if (m_initialized)
@@ -83,9 +83,8 @@ int32_t BMP280::getTemperature()
 
     int32_t temperature = (t_fine * 5 + 128) >> 8;
     DBGLN("%u t=%d p=%u", millis(), temperature, m_pressureLast);
-    BMP280::pressure = m_pressureLast;
-    BMP280::temperature = temperature;
-    return temperature;
+    m_temperature = temperature;
+    return m_temperature;
 }
 
 bool BMP280::detect()
@@ -106,9 +105,14 @@ bool BMP280::detect()
     return false;
 }
 
-void BMP280 ::BaroBase::serialize(JsonObject &sensorObj) override{
-    sensorObj["type"] = "BMP280";                                            // Loại cảm biến
-    sensorObj["address"] = m_address;                                        // Địa chỉ I2C của cảm biến
-    sensorObj["temperature"] = static_cast<float>(getTemperature()) / 100.0; // Nhiệt độ (°C)
-    sensorObj["pressure"] = static_cast<float>(getPressure()) / 10.0;        // Áp suất (hPa)
+void BMP280::serialize(JsonArray &doc) {
+    // Thêm nhiệt độ vào JSON
+    JsonObject tempObj = doc.add<JsonObject>();
+    tempObj["measurement"] = static_cast<float>(m_temperature) / 100.0; // Nhiệt độ (°C)
+    tempObj["type"] = "BMP280_Temperature";                             // Loại cảm biến
+
+    // Thêm áp suất vào JSON
+    JsonObject pressureObj = doc.add<JsonObject>();
+    pressureObj["measurement"] = static_cast<float>(m_pressureLast) / 10.0; // Áp suất (hPa)
+    pressureObj["type"] = "BMP280_Pressure";                                // Loại cảm biến
 }
