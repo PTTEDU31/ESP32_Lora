@@ -37,7 +37,7 @@ public:
 
         // // Add the PH sensor data to the JSON object
         phSensorMessage.serialize(measurements);
-        // baro->serialize(measurements);
+        baro->serialize(measurements);
 
     }
 };

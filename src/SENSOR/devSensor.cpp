@@ -188,7 +188,7 @@ static int senmessagetomqtt()
 }
 device_t Send_message = {
     .initialize = [] { return true; },
-    .start = [] { return 60006000; },
+    .start = [] { return 5000; },
     .event = nullptr,
     .timeout = senmessagetomqtt
 };
