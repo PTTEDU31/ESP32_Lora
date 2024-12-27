@@ -39,6 +39,7 @@ static bool Baro_Detect()
         }
         DBGLN("Detected baro: NONENONE");
     } // I2C
+    baro = nullptr;
 #endif
     return false;
 }
@@ -83,8 +84,8 @@ String SensorService::getJSON(DataMessage *message)
 
     JsonObject root = doc.to<JsonObject>();
 
-    sensorMessage->serialize(root);
 
+    sensorMessage->serialize(root);
     String json;
     serializeJson(doc, json);
 
@@ -112,7 +113,7 @@ DataMessage *SensorService::getDataMessage(JsonObject data)
 
 static int timeout()
 {
-    DBGLN("Current INA219 %f", INA.getBusVoltage_mV());
+    // DBGLN("Current INA219 %f", INA.getBusVoltage_mV());
 
     switch (BaroReadState)
     {
@@ -127,7 +128,7 @@ static int timeout()
     {
         int32_t temp = baro->getTemperature();
         if (temp == BaroBase::TEMPERATURE_INVALID)
-            return DURATION_IMMEDIATELY;
+            return 3000;
     }
         // fallthrough
 
@@ -147,7 +148,7 @@ static int timeout()
     {
         uint32_t press = baro->getPressure();
         if (press == BaroBase::PRESSURE_INVALID)
-            return DURATION_IMMEDIATELY;
+            return 2000;
         // Baro_PublishPressure(press);
     }
         // fallthrough
@@ -158,7 +159,7 @@ static int timeout()
         if (tempDuration == 0)
         {
             BaroReadState = brsReadPres;
-            return DURATION_IMMEDIATELY;
+            return 2000;
         }
         BaroReadState = brsWaitingTemp;
         baro->startTemperature();
@@ -184,17 +185,26 @@ static int senmessagetomqtt()
     // Delete the message
     MessageManager::getInstance().printDataMessageHeader("SendLora", (DataMessage *)message);
     delete message;
-    return 220000;
+    return 22000;
 }
+static int sensorsenevent(){
+    if(connectionState == connected_STA || connectionState == connected){
+        return 2000;
+    }
+    return DURATION_NEVER;
+}
+
 device_t Send_message = {
     .initialize = [] { return true; },
-    .start = [] { return 5000; },
-    .event = nullptr,
-    .timeout = senmessagetomqtt
+    .start = [] { return DURATION_NEVER; },
+    .event = sensorsenevent,
+    .timeout = senmessagetomqtt,
+    .subscribe = EVENT_CONNECTION_CHANGED
 };
 
 device_t Sensor_dev = {
     .initialize = SensorService::getInstance().initialize,
     .start = stat,
     .event = nullptr,
-    .timeout = timeout};
+    .timeout = timeout,
+    .subscribe = EVENT_NONE};

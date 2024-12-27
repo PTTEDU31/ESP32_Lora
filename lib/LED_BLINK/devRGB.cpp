@@ -395,7 +395,10 @@ static int timeout()
         blinkyColor.h = 172;
         return flashLED(blinkyColor, 192, 0, LEDSEQ_UPDATE, sizeof(LEDSEQ_UPDATE));
     case connected_STA:
-        blinkyColor.h = 80;
+        blinkyColor.h = 80;blinkyColor.v = 60;
+        return flashLED(blinkyColor, 192, 0, LEDSEQ_BINDING, sizeof(LEDSEQ_UPDATE));
+    case disconnected_STA:
+        blinkyColor.h = 60;blinkyColor.v = 60;
         return flashLED(blinkyColor, 192, 0, LEDSEQ_BINDING, sizeof(LEDSEQ_UPDATE));
     case wifiUpdate:
         hueFadeLED(blinkyColor, 85, 85 - 30, 128, 2); // Yellow->Green cross-fade

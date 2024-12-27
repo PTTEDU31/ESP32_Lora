@@ -11,12 +11,12 @@
 
 #include "Arduino.h"
 #include "Wire.h"
-
+#include "SENSOR/Sensor_base.h"
 
 #define INA219_LIB_VERSION              (F("0.4.0"))
 
 
-class INA219
+class INA219 
 {
 public:
   //  address between 0x40 and 0x4F
@@ -26,6 +26,8 @@ public:
   bool     isConnected();
   uint8_t  getAddress();
 
+  void initialize();
+  void serialize(JsonArray& doc);
 
   //  CORE FUNCTIONS               //  Register
   float    getShuntVoltage();      //  01

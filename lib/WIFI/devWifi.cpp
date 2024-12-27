@@ -82,13 +82,13 @@ void WiFiEvent(WiFiEvent_t event)
     NodeBackpack->println("IP address: " + WiFi.localIP().toString());
     if (GATEWAY)
       LoRaMeshService::getInstance().setGateway();
-    connectionState = connected_STA;
+    setConnectionState(connected_STA);
     break;
 
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
     NodeBackpack->println("WiFi lost connection");
     LoRaMeshService::getInstance().removeGateway();
-    connectionState = disconnected_STA;
+    setConnectionState(disconnected_STA);
     break;
 
   default:
@@ -140,18 +140,28 @@ static bool initialize()
 #if defined(PLATFORM_ESP8266)
   WiFi.forceSleepBegin();
 #endif
-  if (GATEWAY)
-    startWiFi(millis());
+
   registerButtonFunction(ACTION_START_WIFI, []()
                          { setWifiUpdateMode(); });
   WiFi.onEvent(WiFiEvent);
   return true;
 }
 
+
+
+
 // Hàm bắt đầu Wi-Fi
 static int start()
 {
   ipAddress.fromString(wifi_ap_address);
+  if (GATEWAY)
+  {
+
+    startWiFi(millis());
+    return DURATION_IMMEDIATELY;
+  }
+  else
+    return DURATION_NEVER;
   return firmwareOptions.wifi_auto_on_interval;
 }
 

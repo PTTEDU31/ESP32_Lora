@@ -143,6 +143,7 @@ static int timeout()
     DBGLN("MQTT client is not connected, skipping publish.");
     mqttClient.connect();
   }
+  
   return 60000;
 }
 

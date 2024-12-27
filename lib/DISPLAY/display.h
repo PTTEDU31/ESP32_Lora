@@ -32,28 +32,9 @@ class Display
 {
 public:
     virtual void init() = 0;
-    // virtual void doScreenBackLight(screen_backlight_t state) = 0;
-    // virtual void printScreenshot() = 0;
-
-    // virtual void displaySplashScreen() = 0;
-    // virtual void displayIdleScreen(uint8_t changed, uint8_t rate_index, uint8_t power_index, uint8_t ratio_index, uint8_t motion_index, uint8_t fan_index, bool dynamic, uint8_t running_power_index, uint8_t temperature, message_index_t message_index) = 0;
-    // virtual void displayMainMenu(menu_item_t menu) = 0;
-    // virtual void displayValue(menu_item_t menu, uint8_t value_index) = 0;
-    // virtual void displayBLEConfirm() = 0;
-    // virtual void displayBLEStatus() = 0;
-    // virtual void displayBindConfirm() = 0;
-    // virtual void displayBindStatus() = 0;
-    // virtual void displayWiFiConfirm() = 0;
-    // virtual void displayWiFiStatus() = 0;
-    // virtual void displayRunning() = 0;
-    // virtual void displaySending() = 0;
-    // virtual void displayLinkstats() = 0;
     virtual void display_print_addr() = 0 ;
     virtual void display_wifi_status() = 0;
-
-    // int getValueCount(menu_item_t menu);
-    // const char *getValue(menu_item_t menu, uint8_t value_index);
-
+    
 protected:
     static const char *message_string[];
     static const char *main_menu_strings[][2];

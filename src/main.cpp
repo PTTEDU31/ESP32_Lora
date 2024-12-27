@@ -150,17 +150,15 @@ void setup()
         initManager();
 
         ESP_LOGV(TAG, "Heap after initManager: %d", ESP.getFreeHeap());
-        if (loraMeshService.initLoraMesherService())
+        init_success = loraMeshService.initLoraMesherService();
+        if (!init_success)
         {
-            init_success = false;
             setConnectionState(hardwareUndefined);
         }
 
         ESP_LOGV(TAG, "Heap after initLoRaMesher: %d", ESP.getFreeHeap());
         NodeUSB->print("Commnad:");
         NodeUSB->println(manager.getAvailableCommands());
-        if (!init_success)
-            setConnectionState(radioFailed);
     }
     devicesStart();
 }

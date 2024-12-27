@@ -82,7 +82,7 @@ int32_t BMP280::getTemperature()
     m_pressureLast = ((uint32_t)p) >> 8;
 
     int32_t temperature = (t_fine * 5 + 128) >> 8;
-    DBGLN("%u t=%d p=%u", millis(), temperature, m_pressureLast);
+    // DBGLN("%u t=%d p=%u", millis(), temperature, m_pressureLast);
     m_temperature = temperature;
     return m_temperature;
 }

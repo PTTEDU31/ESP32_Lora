@@ -33,11 +33,30 @@ public:
         // Set all the measurements in an array called "message"
         JsonArray measurements = doc["message"].to<JsonArray>(); // Thay createNestedArray bằng to<JsonArray>()
 
-    
-
         // // Add the PH sensor data to the JSON object
         phSensorMessage.serialize(measurements);
-        baro->serialize(measurements);
+        if (baro != nullptr)
+        {
+            baro->serialize(measurements);
+        }else
+        {
+            /* code */
+            serializenullbaro(measurements);
+        }
+        
+    }
 
+private:
+    void serializenullbaro(JsonArray &doc)
+    {
+        // Thêm nhiệt độ vào JSON
+        JsonObject tempObj = doc.add<JsonObject>();
+        tempObj["measurement"] = static_cast<float>(-273)  ; // Nhiệt độ (°C)
+        tempObj["type"] = "BMP280_Temperature";                             // Loại cảm biến
+
+        // Thêm áp suất vào JSON
+        JsonObject pressureObj = doc.add<JsonObject>();
+        pressureObj["measurement"] = static_cast<float>(-1) ; // Áp suất (hPa)
+        pressureObj["type"] = "BMP280_Pressure";                                // Loại cảm biến
     }
 };
