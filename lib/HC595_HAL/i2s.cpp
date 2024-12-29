@@ -108,7 +108,7 @@ bool i2s_init(void)
 }
 	i2s_std_config_t tx_std_cfg = {
 		.clk_cfg = I2S_CLK_CONFIG(250000),
-		.slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_MONO),
+		.slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
 		.gpio_cfg = {
 			.mclk = I2S_GPIO_UNUSED,
 			.bclk = gpio_num_t(GPIO_PIN_I2S_SCL),

@@ -28,7 +28,7 @@
 #if defined(TARGET_TX)
 extern Stream * NodeBackpack;
 #if defined(PLATFORM_ESP32_S3)
-#define LOGGING_UART (* NodeBackpack)
+#define LOGGING_UART (Serial)
 #else
 #define LOGGING_UART (*NodeBackpack)
 #endif

@@ -67,8 +67,8 @@ bool SensorService::initialize()
     if (!INA.begin())
     {
         DBGLN("INA219 init false");
-        return 0;
     }
+    DBGLN("INA219 init true");
     return 1;
 
 #endif
