@@ -87,7 +87,7 @@ void load_buf(void *parameter)
 	.auto_clear = true,                         \
 }
 
-void i2s_init(void)
+bool i2s_init(void)
 {
 	// Cấu hình kênh truyền I2S
 	i2s_chan_config_t tx_chan_cfg = I2S_CHANNEL_CONFIG(I2S_NUM_0, I2S_ROLE_MASTER);
@@ -97,7 +97,7 @@ void i2s_init(void)
 	if (err == ESP_ERR_NOT_FOUND)
 	{
 		ESP_LOGE(TAG, "Không tìm thấy kênh I2S khả dụng");
-		return;
+		return 0;
 	}
 	ESP_ERROR_CHECK(err);
 
@@ -108,7 +108,7 @@ void i2s_init(void)
 }
 	i2s_std_config_t tx_std_cfg = {
 		.clk_cfg = I2S_CLK_CONFIG(250000),
-		.slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_MONO),
+		.slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
 		.gpio_cfg = {
 			.mclk = I2S_GPIO_UNUSED,
 			.bclk = gpio_num_t(GPIO_PIN_I2S_SCL),
@@ -145,11 +145,12 @@ void i2s_init(void)
 	if (task_created != pdPASS)
 	{
 		ESP_LOGE(TAG, "Không thể tạo task 'Load_buf'");
-		return;
+		return 0;
 	}
 
 	// Kích hoạt kênh I2S
 	ESP_ERROR_CHECK(i2s_channel_enable(tx_chan));
 
 	DBGLN("\ni2s_init thành công");
+	return 1;
 }

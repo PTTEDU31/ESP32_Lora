@@ -327,7 +327,7 @@ static int blinkyUpdate()
     return 3000 / (256 / hueStepValue);
 }
 
-static void initialize()
+static bool initialize()
 {
     if (GPIO_PIN_LED_WS2812 != UNDEF_PIN)
     {
@@ -368,6 +368,7 @@ static void initialize()
         blinkyColor.s = 255;
         blinkyColor.v = 128;
     }
+    return GPIO_PIN_LED_WS2812 != UNDEF_PIN;
 }
 static int start()
 {
@@ -377,9 +378,6 @@ static int start()
     if (esp_reset_reason() == ESP_RST_SW)
     {
         blinkyState = NORMAL;
-// #if defined(TARGET_TX)
-//         setButtonColors(config.GetButtonActions(0)->val.color, config.GetButtonActions(1)->val.color);
-// #endif
         return NORMAL_UPDATE_INTERVAL;
     }
 #endif
@@ -397,7 +395,10 @@ static int timeout()
         blinkyColor.h = 172;
         return flashLED(blinkyColor, 192, 0, LEDSEQ_UPDATE, sizeof(LEDSEQ_UPDATE));
     case connected_STA:
-        blinkyColor.h = 80;
+        blinkyColor.h = 80;blinkyColor.v = 60;
+        return flashLED(blinkyColor, 192, 0, LEDSEQ_BINDING, sizeof(LEDSEQ_UPDATE));
+    case disconnected_STA:
+        blinkyColor.h = 60;blinkyColor.v = 60;
         return flashLED(blinkyColor, 192, 0, LEDSEQ_BINDING, sizeof(LEDSEQ_UPDATE));
     case wifiUpdate:
         hueFadeLED(blinkyColor, 85, 85 - 30, 128, 2); // Yellow->Green cross-fade
@@ -414,7 +415,6 @@ device_t RGB_device = {
     .start = start,
     .event = timeout,
     .timeout = timeout,
-    .id = deviceId::nodev,
-};
+    .subscribe = EVENT_CONNECTION_CHANGED | EVENT_ENTER_BIND_MODE | EVENT_EXIT_BIND_MODE};
 
 #endif

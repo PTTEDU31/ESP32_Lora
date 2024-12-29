@@ -1,7 +1,7 @@
 #include "baro_bmp280.h"
 #include <Arduino.h>
 #include "logging.h"
-
+#include <ArduinoJson.h>
 void BMP280::initialize()
 {
     if (m_initialized)
@@ -22,8 +22,8 @@ uint8_t BMP280::getTemperatureDuration()
 {
     // Calculate in microseconds, then divide by 1000 for ms, rounding up
     constexpr uint32_t duration = 1250U +
-        (2300U * ((1U << OVERSAMPLING_TEMPERATURE) >> 1)) +
-        (2300U * ((1U << OVERSAMPLING_PRESSURE) >> 1) + 575U);
+                                  (2300U * ((1U << OVERSAMPLING_TEMPERATURE) >> 1)) +
+                                  (2300U * ((1U << OVERSAMPLING_PRESSURE) >> 1) + 575U);
     return (FREERUNNING_NUM_SAMPLES * duration + 999U) / 1000U;
 }
 
@@ -58,14 +58,14 @@ int32_t BMP280::getTemperature()
     // BME280_compensate_T_int32()
     int32_t var01, var02;
     var01 = ((((adc_T >> 3) - ((int32_t)m_calib.dig_T1 << 1))) * ((int32_t)m_calib.dig_T2)) >> 11;
-    var02  = (((((adc_T >> 4) - ((int32_t)m_calib.dig_T1)) * ((adc_T >> 4) - ((int32_t)m_calib.dig_T1))) >> 12) * ((int32_t)m_calib.dig_T3)) >> 14;
+    var02 = (((((adc_T >> 4) - ((int32_t)m_calib.dig_T1)) * ((adc_T >> 4) - ((int32_t)m_calib.dig_T1))) >> 12) * ((int32_t)m_calib.dig_T3)) >> 14;
     int32_t t_fine = var01 + var02;
 
     // BME280_compensate_P_int64()
     int64_t var1, var2, p;
     var1 = ((int64_t)t_fine) - 128000;
     var2 = var1 * var1 * (int64_t)m_calib.dig_P6;
-    var2 = var2 + ((var1*(int64_t)m_calib.dig_P5) << 17);
+    var2 = var2 + ((var1 * (int64_t)m_calib.dig_P5) << 17);
     var2 = var2 + (((int64_t)m_calib.dig_P4) << 35);
     var1 = ((var1 * var1 * (int64_t)m_calib.dig_P3) >> 8) + ((var1 * (int64_t)m_calib.dig_P2) << 12);
     var1 = (((((int64_t)1) << 47) + var1)) * ((int64_t)m_calib.dig_P1) >> 33;
@@ -82,9 +82,9 @@ int32_t BMP280::getTemperature()
     m_pressureLast = ((uint32_t)p) >> 8;
 
     int32_t temperature = (t_fine * 5 + 128) >> 8;
-    //DBGLN("%u t=%d p=%u", millis(), temperature, m_pressureLast);
-
-    return temperature;
+    // DBGLN("%u t=%d p=%u", millis(), temperature, m_pressureLast);
+    m_temperature = temperature;
+    return m_temperature;
 }
 
 bool BMP280::detect()
@@ -94,13 +94,25 @@ bool BMP280::detect()
 
     // BMP280 can have two addresses based on the SDO pin.
     // Adafruit breakout has it tied high, Aliexpress boards have it tied low
-    for (uint8_t addr : { BMP280_I2C_ADDR, BMP280_I2C_ADDR_ALT })
+    for (uint8_t addr : {BMP280_I2C_ADDR, BMP280_I2C_ADDR_ALT})
     {
-       m_address = addr;
-       readRegister(BMP280_REG_CHIPID, &chipid, sizeof(chipid));
-       if (chipid == BMP280_CHIPID || chipid == BME280_CHIPID)
-           return true;
+        m_address = addr;
+        readRegister(BMP280_REG_CHIPID, &chipid, sizeof(chipid));
+        if (chipid == BMP280_CHIPID || chipid == BME280_CHIPID)
+            return true;
     }
 
     return false;
+}
+
+void BMP280::serialize(JsonArray &doc) {
+    // Thêm nhiệt độ vào JSON
+    JsonObject tempObj = doc.add<JsonObject>();
+    tempObj["measurement"] = static_cast<float>(m_temperature) / 100.0; // Nhiệt độ (°C)
+    tempObj["type"] = "BMP280_Temperature";                             // Loại cảm biến
+
+    // Thêm áp suất vào JSON
+    JsonObject pressureObj = doc.add<JsonObject>();
+    pressureObj["measurement"] = static_cast<float>(m_pressureLast) / 10.0; // Áp suất (hPa)
+    pressureObj["type"] = "BMP280_Pressure";                                // Loại cảm biến
 }

@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
-
-class BaroBase
+#include "../Sensor_base.h"
+class BaroBase : public Sensor_base
 {
 public:
     static const int32_t ALTITUDE_INVALID = 0x7fffffff;
@@ -12,8 +12,8 @@ public:
 
     BaroBase() : m_initialized(false), m_altitudeHome(ALTITUDE_INVALID) {}
 
-    virtual void initialize() = 0;
-    // Return expected duration of pressure measurement (ms)
+    // virtual void initialize() = 0;
+    // // Return expected duration of pressure measurement (ms)
     virtual uint8_t getPressureDuration() = 0;
     // Start reading pressure
     virtual void startPressure() = 0;

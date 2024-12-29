@@ -28,7 +28,7 @@ public:
         return instance;
     }
 
-    void initLoraMesherService();
+    bool initLoraMesherService();
 
     uint16_t getLocalAddress();
 

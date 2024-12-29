@@ -20,6 +20,7 @@ public:
     uint8_t getPressureDuration() { return 0; }
     void startPressure() {}
     uint32_t getPressure();
+    void serialize(JsonArray& doc);
 
 protected:
     // Filter 4: 1x=1.2PaRMS 2x=1.0PaRMS 4x=0.8PaRMS 8x=0.6PaRMS 16x=0.5PaRMS
@@ -50,4 +51,5 @@ protected:
     } __attribute__((packed)) m_calib;
 
     uint32_t m_pressureLast;
+    uint32_t m_temperature;
 };

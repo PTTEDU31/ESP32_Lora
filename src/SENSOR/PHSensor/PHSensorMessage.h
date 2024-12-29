@@ -15,11 +15,11 @@ public:
     PHSensorMessage(float temperature, float ph): temperature(temperature), ph(ph) {}
 
     void serialize(JsonArray& doc) {
-        JsonObject tempObj = doc.createNestedObject();
+        JsonObject tempObj = doc.add<JsonObject>();
         tempObj["measurement"] = temperature;
         tempObj["type"] = "Soil_Temperature";
 
-        JsonObject phObj = doc.createNestedObject();
+        JsonObject phObj = doc.add<JsonObject>();
         phObj["measurement"] = ph;
         phObj["type"] = "Soil_PH";
     }

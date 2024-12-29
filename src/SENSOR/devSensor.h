@@ -2,7 +2,21 @@
 
 #include "device.h"
 #include "SensorService.h"
-// #if defined(PLATFORM_ESP32) || defined(PLATFORM_ESP8266)
-// #include "devButton.h"
+#include "common.h"
+#include "device.h"
+#if defined(USE_ANALOG_VBAT)
+#include "devAnalogVbat.h"
+#endif
+enum eBaroReadState : uint8_t
+{
+    brsNoBaro,
+    brsUninitialized,
+    brsReadTemp,
+    brsWaitingTemp,
+    brsReadPres,
+    brsWaitingPress
+};
 
 extern device_t Sensor_dev;
+
+extern device_t Send_message;

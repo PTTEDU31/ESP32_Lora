@@ -6,7 +6,7 @@
 #include "devMQTT.h"
 #include "SENSOR/devSensor.h"
 #include "PWM.h"
-
+#include "FIFO.h"
 #if defined(PLATFORM_ESP32)
 #include "devScreen.h"
 #include "devETH.h"
@@ -27,22 +27,20 @@ device_affinity_t devices[] = {
 #ifdef GATEWAY
     {&MQTT_device, 0},
 #endif
-    {&Sensor_dev, 0}};
+    {&Sensor_dev, 0},
+    {&Send_message, 0}};
 
 Stream *NodeUSB;
 Stream *NodeBackpack;
+Stream *Node485;
+#define UART_INPUT_BUF_LEN 1024
+FIFO<UART_INPUT_BUF_LEN> uartInputBuffer;
 /**
  * Target-specific initialization code called early in setup()
  * Setup GPIOs or other hardware, config not yet loaded
  ***/
 
 LoRaMeshService &loraMeshService = LoRaMeshService::getInstance();
-
-void initLoRaMesher()
-{
-    // Init LoRaMesher
-    loraMeshService.initLoraMesherService();
-}
 
 DEV_MQTT &mqttService = DEV_MQTT::getInstance();
 SensorService &sensorService = SensorService::getInstance();
@@ -121,7 +119,63 @@ void setupSerial()
 #else
     NodeUSB = new NullStream();
 #endif
+#ifdef OPT_HAS_RS485
+    Stream *serialPort485;
+    if (GPIO_PIN_RS485_RX != UNDEF_PIN && GPIO_PIN_RS485_TX != UNDEF_PIN)
+    {
+        serialPort485 = new HardwareSerial(1);
+        ((HardwareSerial *)serialPort485)->begin(115200, SERIAL_8N1, GPIO_PIN_RS485_RX, GPIO_PIN_RS485_TX);
+    }
+    else
+    {
+        serialPort485 = new NullStream();
+    }
+#endif
+    Node485 = serialPort485;
 }
+
+// static void HandleUARTin()
+// {
+//     // Read from the USB serial port
+//     if (TxUSB->available())
+//     {
+//         if (firmwareOptions.is_airport)
+//         {
+//             auto size = std::min(apInputBuffer.free(), (uint16_t)TxUSB->available());
+//             if (size > 0)
+//             {
+//                 uint8_t buf[size];
+//                 TxUSB->readBytes(buf, size);
+//                 apInputBuffer.lock();
+//                 apInputBuffer.pushBytes(buf, size);
+//                 apInputBuffer.unlock();
+//             }
+//         }
+//         else
+//         {
+//             auto size = std::min(uartInputBuffer.free(), (uint16_t)TxUSB->available());
+//             if (size > 0)
+//             {
+//                 uint8_t buf[size];
+//                 TxUSB->readBytes(buf, size);
+//                 uartInputBuffer.lock();
+//                 uartInputBuffer.pushBytes(buf, size);
+//                 uartInputBuffer.unlock();
+
+//                 // Lets check if the data is Mav and auto change LinkMode
+//                 // Start the hwTimer since the user might be operating the module as a standalone unit without a handset.
+//                 if (connectionState == noCrossfire)
+//                 {
+//                     if (isThisAMavPacket(buf, size))
+//                     {
+//                         config.SetLinkMode(TX_MAVLINK_MODE);
+//                         UARTconnected();
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 static void setupTarget()
 {
     setupSerial();
@@ -141,6 +195,33 @@ bool setupHardwareFromOptions()
     }
     return true;
 }
+void handleUartMessage()
+{
+    while (Serial.available())
+    {
+        // Đọc dữ liệu từ UART đến khi gặp ký tự '\n'
+        String message = Serial.readStringUntil('\n');
+
+        // Xóa ký tự xuống dòng hoặc ký tự không mong muốn cuối chuỗi
+        message.trim();
+
+        // In dữ liệu nhận được ra Serial Monitor
+        Serial.println("Received message:");
+        Serial.println(message);
+
+        // Xử lý lệnh thông qua MessageManager
+        String executedProgram = MessageManager::getInstance().executeCommand(message);
+
+        // In kết quả thực thi
+        Serial.println("Executed program:");
+        Serial.println(executedProgram);
+
+        // Gửi phản hồi qua UART
+        Serial.println("Sending response:");
+        Serial.println(executedProgram);
+    }
+}
+
 void setup()
 {
     if (setupHardwareFromOptions())
@@ -148,18 +229,34 @@ void setup()
         setupTarget();
         devicesRegister(devices, ARRAY_SIZE(devices));
         devicesInit();
-        devicesStart();
-    }
-    pwm.init_pwm();
-    // Initialize Manager
-    initManager();
+        DBGLN("Initialised devices");
+        bool init_success;
+        init_success = pwm.init_pwm();
+        // Initialize Manager
+        initManager();
 
-    ESP_LOGV(TAG, "Heap after initManager: %d", ESP.getFreeHeap());
-    initLoRaMesher();
-    ESP_LOGV(TAG, "Heap after initLoRaMesher: %d", ESP.getFreeHeap());
-    NodeUSB->print("Commnad:");
-    NodeUSB->println(manager.getAvailableCommands());
+        ESP_LOGV(TAG, "Heap after initManager: %d", ESP.getFreeHeap());
+        init_success = loraMeshService.initLoraMesherService();
+        if (!init_success)
+        {
+            setConnectionState(hardwareUndefined);
+        }
+
+        ESP_LOGV(TAG, "Heap after initLoRaMesher: %d", ESP.getFreeHeap());
+        NodeUSB->print("Commnad:");
+        NodeUSB->println(manager.getAvailableCommands());
+    }
+    else
+    {
+        // In the failure case we set the logging to the null logger so nothing crashes
+        // if it decides to log something
+        NodeBackpack = new NullStream();
+    }
+
+    devicesStart();
+    pwm.set_pwm(128, 30,4000);
 }
+
 #include "WiFi.h"
 void loop()
 {

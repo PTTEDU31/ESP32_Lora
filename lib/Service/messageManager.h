@@ -10,9 +10,7 @@
 
 #include "loraMeshService.h"
 
-// #include "mqtt/mqttService.h"
 
-// #include "wifi/wifiServerService.h"
 
 class MessageManager {
 public:

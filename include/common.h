@@ -2,15 +2,8 @@
 
 #ifndef UNIT_TEST
 #include "targets.h"
+#include <device.h>
 
-// #if defined(RADIO_SX127X)
-// #include "SX127xDriver.h"
-// #elif defined(RADIO_LR1121)
-// #include "LR1121Driver.h"
-// #elif defined(RADIO_SX128X)
-// #include "SX1280Driver.h"
-// #else
-// #error "Radio configuration is not valid!"
 #endif
 
 #define OTA_VERSION_ID      4
@@ -74,5 +67,12 @@ typedef union {
 
 extern uint8_t UID[UID_LEN];
 extern connectionState_e connectionState;
+extern bool connectionHasModelMatch;
 extern bool teamraceHasModelMatch;
 # define MAX_CONNECTION_TRY 10
+#if !defined(UNIT_TEST)
+inline void setConnectionState(connectionState_e newState) {
+    connectionState = newState;
+    devicesTriggerEvent(EVENT_CONNECTION_CHANGED);
+}
+#endif

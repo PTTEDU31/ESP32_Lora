@@ -100,7 +100,7 @@ void onMqttSubscribe(uint16_t packetId, uint8_t qos)
   NodeBackpack->println(qos);
 }
 
-void DEV_MQTT::initialize()
+bool DEV_MQTT::initialize()
 {
   initialized = true;
   mqttClient.onConnect(onMqttConnect);
@@ -110,6 +110,7 @@ void DEV_MQTT::initialize()
   sprintf(buffer, "%04X", LoRaMeshService::getInstance().getLocalAddress());
   mqttClient.setClientId(buffer);
   mqttClient.setServer(firmwareOptions.mqtt_server, firmwareOptions.mqtt_port);
+  return true;
 }
 static int start()
 {
@@ -142,6 +143,7 @@ static int timeout()
     DBGLN("MQTT client is not connected, skipping publish.");
     mqttClient.connect();
   }
+  
   return 60000;
 }
 
@@ -150,4 +152,4 @@ device_t MQTT_device = {
     .start = start,
     .event = event,
     .timeout = timeout,
-};
+    .subscribe = EVENT_CONNECTION_CHANGED};

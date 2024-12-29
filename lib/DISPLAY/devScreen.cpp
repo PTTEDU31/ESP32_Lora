@@ -5,11 +5,11 @@
 #include "devScreen.h"
 #include "common.h"
 #include "logging.h"
-
+#include "button.h"
 #include "OLED/oleddisplay.h"
 
 Display *display;
-static void initialize()
+static bool initialize()
 {
     if (OPT_HAS_SCREEN)
     {
@@ -23,6 +23,7 @@ static void initialize()
         }
         display->init();
     }
+    return OPT_HAS_SCREEN;
 }
 static int start()
 {
