@@ -1,0 +1,50 @@
+{
+    "customised": "true",
+
+    "radio_busy": 47,
+    "radio_dio1": 48,
+    "radio_miso": 13,
+    "radio_mosi": 11,
+    "radio_nss": 14,
+    "radio_rst": 21,
+    "radio_sck": 12,
+    "power_min": 0,
+    "power_high": 0,
+    "power_max": 0,
+    "power_default": 0,
+    "power_control": 0,
+    "power_values": [
+        13
+    ],
+    "led_rgb": 8,
+    "led_rgb_isgrb": true,
+    "ledidx_rgb_status": [
+        0
+    ],
+    "ledidx_rgb_boot": [
+        0
+    ],
+    "button": 0,
+    "screen_type": 1,
+    "screen_reversed": true,
+    "screen_sck": 40,
+    "screen_sda": 41,
+    "use_backpack": true,
+    "debug_backpack_baud": 115200,
+    "debug_backpack_rx": 44,
+    "debug_backpack_tx": 43,
+    "i2c_scl": 40,
+    "i2c_sda": 41,
+    "has_rs485": true,
+    "rs485_rx": 12,
+    "rs485_tx": 13,
+    "rs485_baud": 115200,
+    "has_gprs": true,
+    "GPRS_protocal": 1,
+    "GPRS_baud": 115200,
+    "GPRS_rx": 10,
+    "GPRS_tx": 11,
+    "i2s_scl": 1,
+    "i2s_sda": 42,
+    "i2s_latch": 2
+}
