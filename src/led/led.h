@@ -51,6 +51,7 @@ private:
     Led(): MessageService(LedApp, "Led") {
         commandService = ledCommandService;
     };
+    void sendstatus();
 
     uint8_t state = 0;
 };

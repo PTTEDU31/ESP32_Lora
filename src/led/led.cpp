@@ -1,25 +1,28 @@
 #include "led.h"
 #include "PWM.h"
-static const char* LED_TAG = "LedService";
-
-
-void Led::init() {
+#include "logging.h"
+static const char *LED_TAG = "LedService";
+static u_int countmes = 0;
+void Led::init()
+{
     SET_OUTPUT(135);
 }
 
-String Led::ledOn() {
+String Led::ledOn()
+{
     WRITE(135, 1);
     ESP_LOGV(LED_TAG, "Led On");
-    state = 1;
+    Led::state = 1;
     return "Led On";
 }
 
-String Led::ledOn(uint16_t dst) {
+String Led::ledOn(uint16_t dst)
+{
     ESP_LOGV(LED_TAG, "Led On to %X", dst);
     if (dst == LoraMesher::getInstance().getLocalAddress())
         return ledOn();
 
-    DataMessage* msg = getLedMessage(LedCommand::On, dst);
+    DataMessage *msg = getLedMessage(LedCommand::On, dst);
     MessageManager::getInstance().sendMessage(messagePort::LoRaMeshPort, msg);
 
     delete msg;
@@ -27,28 +30,51 @@ String Led::ledOn(uint16_t dst) {
     return "Led On";
 }
 
-String Led::ledOff() {
-     WRITE(135, 0);
+String Led::ledOff()
+{
+    WRITE(135, 0);
     ESP_LOGV(LED_TAG, "Led Off");
-    state = 0;
+    Led::state = 0;
     return "Led Off";
 }
 
-String Led::ledOff(uint16_t dst) {
+String Led::ledOff(uint16_t dst)
+{
     ESP_LOGV(LED_TAG, "Led Off to %X", dst);
     if (dst == LoraMesher::getInstance().getLocalAddress())
         return ledOff();
 
-    DataMessage* msg = getLedMessage(LedCommand::Off, dst);
+    DataMessage *msg = getLedMessage(LedCommand::Off, dst);
     MessageManager::getInstance().sendMessage(messagePort::LoRaMeshPort, msg);
 
     delete msg;
 
     return "Led Off";
 }
+void Led::sendstatus()
+{
+    PWMCommandMessage *message = new PWMCommandMessage();
 
-String Led::ledBlink() {
-    if (state == 1) {
+    message->ledCommand = (LedCommand)Led::state;
+    message->duty = 0;
+    message->frequency = 0;
+
+    message->appPortDst = appPort::MQTTApp;
+    message->appPortSrc = appPort::LedApp;
+    message->addrSrc = LoraMesher::getInstance().getLocalAddress();
+    message->addrDst = 0;
+    message->messageId = countmes++;
+    message->messageSize = sizeof(PWMCommandMessage) - sizeof(DataMessageGeneric);
+    // Send the message
+    MessageManager::getInstance().sendMessage(messagePort::MqttPort, (DataMessage *)message);
+
+    // Delete the message
+    delete message;
+}
+String Led::ledBlink()
+{
+    if (state == 1)
+    {
         ledOff();
         delay(200);
         ledOn();
@@ -57,7 +83,8 @@ String Led::ledBlink() {
         delay(200);
         ledOn();
     }
-    else {
+    else
+    {
         ledOn();
         delay(200);
         ledOff();
@@ -69,14 +96,15 @@ String Led::ledBlink() {
     return "Led Blink";
 }
 
-String Led::getJSON(DataMessage* message) {
-    LedMessage* ledMessage = (LedMessage*) message;
+String Led::getJSON(DataMessage *message)
+{
+    LedMessage *PWMMessage = (LedMessage *)message;
 
-    StaticJsonDocument<200> doc;
+    StaticJsonDocument<2000> doc;
 
-    JsonObject data = doc.createNestedObject("data");
+    JsonObject root = doc.to<JsonObject>();
 
-    ledMessage->serialize(data);
+    PWMMessage->serialize(root);
 
     String json;
     serializeJson(doc, json);
@@ -84,18 +112,20 @@ String Led::getJSON(DataMessage* message) {
     return json;
 }
 
-DataMessage* Led::getDataMessage(JsonObject data) {
-    LedMessage* ledMessage = new LedMessage();
+DataMessage *Led::getDataMessage(JsonObject data)
+{
+    LedMessage *ledMessage = new LedMessage();
 
     ledMessage->deserialize(data);
 
     ledMessage->messageSize = sizeof(LedMessage) - sizeof(DataMessageGeneric);
 
-    return ((DataMessage*) ledMessage);
+    return ((DataMessage *)ledMessage);
 }
 
-DataMessage* Led::getLedMessage(LedCommand command, uint16_t dst) {
-    LedMessage* ledMessage = new LedMessage();
+DataMessage *Led::getLedMessage(LedCommand command, uint16_t dst)
+{
+    LedMessage *ledMessage = new LedMessage();
 
     ledMessage->messageSize = sizeof(LedMessage) - sizeof(DataMessageGeneric);
 
@@ -107,20 +137,26 @@ DataMessage* Led::getLedMessage(LedCommand command, uint16_t dst) {
     ledMessage->addrSrc = LoraMesher::getInstance().getLocalAddress();
     ledMessage->addrDst = dst;
 
-    return (DataMessage*) ledMessage;
+    return (DataMessage *)ledMessage;
 }
 
-void Led::processReceivedMessage(messagePort port, DataMessage* message) {
-    LedMessage* ledMessage = (LedMessage*) message;
+void Led::processReceivedMessage(messagePort port, DataMessage *message)
+{
+    LedMessage *ledMessage = (LedMessage *)message;
 
-    switch (ledMessage->ledCommand) {
-        case LedCommand::On:
-            ledOn();
-            break;
-        case LedCommand::Off:
-            ledOff();
-            break;
-        default:
-            break;
+    switch (ledMessage->ledCommand)
+    {
+    case LedCommand::On:
+        ledOn();
+        break;
+    case LedCommand::Off:
+        ledOff();
+        break;
+    case LedCommand::Sendata:
+        DBGLN("Status : %d",Led::state);
+        sendstatus();
+        break;
+    default:
+        break;
     }
 }
