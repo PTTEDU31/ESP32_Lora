@@ -22,11 +22,13 @@ class EX_PWM
 {
 public:
     EX_PWM();
+    
 
     static pwm_pin_t pwm_pin_data[MAX_EX_PIN];                                // Dữ liệu của các chân PWM
     static bool init_pwm();                                                   // Khởi tạo hệ thống PWM
     static void set_pwm(int pin, int duty = 255, uint32_t f = PWM_FREQUENCY); // Thiết lập PWM
     static void set_pwm_duty(int pin, int duty = 255);                        // Thiết lập chu kỳ PWM
+    static void exWrite(int pin, int val);
 private:
     static void set_pwm_frequency(int pin, uint32_t f);
 };

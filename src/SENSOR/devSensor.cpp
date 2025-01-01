@@ -84,7 +84,6 @@ String SensorService::getJSON(DataMessage *message)
 
     JsonObject root = doc.to<JsonObject>();
 
-
     sensorMessage->serialize(root);
     String json;
     serializeJson(doc, json);
@@ -114,7 +113,6 @@ DataMessage *SensorService::getDataMessage(JsonObject data)
 static int timeout()
 {
     // DBGLN("Current INA219 %f", INA.getBusVoltage_mV());
-
     switch (BaroReadState)
     {
     default: // fallthrough
@@ -148,7 +146,7 @@ static int timeout()
     {
         uint32_t press = baro->getPressure();
         if (press == BaroBase::PRESSURE_INVALID)
-            return 2000;
+            return 3000;
         // Baro_PublishPressure(press);
     }
         // fallthrough
@@ -159,7 +157,7 @@ static int timeout()
         if (tempDuration == 0)
         {
             BaroReadState = brsReadPres;
-            return 2000;
+            return 3000;
         }
         BaroReadState = brsWaitingTemp;
         baro->startTemperature();
@@ -167,11 +165,14 @@ static int timeout()
     }
     }
 }
+
 static int senmessagetomqtt()
 {
     MeasurementMessage *message = new MeasurementMessage();
     message->phSensorMessage = phSensor->read();
-    message->baro = (Sensor_base *)baro;
+    message->baro = baro->read();
+    message->ina = INA.read();
+
 
     message->appPortDst = appPort::MQTTApp;
     message->appPortSrc = appPort::SensorApp;
@@ -187,20 +188,23 @@ static int senmessagetomqtt()
     delete message;
     return 22000;
 }
-static int sensorsenevent(){
-    if(connectionState == connected_STA || connectionState == connected){
+static int sensorsenevent()
+{
+    if (connectionState == connected_STA || connectionState == connected)
+    {
         return 2000;
     }
     return DURATION_NEVER;
 }
 
 device_t Send_message = {
-    .initialize = [] { return true; },
-    .start = [] { return DURATION_NEVER; },
+    .initialize = []
+    { return true; },
+    .start = []
+    { return DURATION_NEVER; },
     .event = sensorsenevent,
     .timeout = senmessagetomqtt,
-    .subscribe = EVENT_CONNECTION_CHANGED
-};
+    .subscribe = EVENT_CONNECTION_CHANGED};
 
 device_t Sensor_dev = {
     .initialize = SensorService::getInstance().initialize,

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "targets.h"
-// #include "elrs_eeprom.h"
+// #include "LoraMesh_eeprom.h"
 #include "options.h"
 #include "common.h"
 

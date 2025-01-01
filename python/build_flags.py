@@ -19,7 +19,7 @@ target_name = env.get('PIOENV', '').upper()
 def print_error(error):
     time.sleep(1)
     sys.stdout.write("\n\n\033[47;31m%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n")
-    sys.stdout.write("\033[47;31m!!!             ExpressLRS Warning Below             !!!\n")
+    sys.stdout.write("\033[47;31m!!!             LoraMesh Warning Below             !!!\n")
     sys.stdout.write("\033[47;31m%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n")
     sys.stdout.write("\033[47;30m  %s \n" % error)
     sys.stdout.write("\033[47;31m%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n\n")

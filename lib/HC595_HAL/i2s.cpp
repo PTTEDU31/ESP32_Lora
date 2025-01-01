@@ -18,16 +18,6 @@ static const char *TAG = "I2S";	  // Thẻ (tag) cho log
 uint32_t i2s_port_data = 0;
 static uint32_t *w_buf = (uint32_t *)calloc(DMA_BUFFER_LEN / sizeof(uint32_t), sizeof(uint32_t));
 size_t bytes_written = 0;
-static IRAM_ATTR bool i2s_tx_queue_overflow_callback(i2s_chan_handle_t handle, i2s_event_data_t *event, void *user_ctx)
-{
-	//  ESP_LOGW(TAG, "OVERFLOW Detected");
-	return false; // Không yêu cầu xử lý thêm sau khi callback được gọi
-}
-static IRAM_ATTR bool i2s_tx_sent_callback(i2s_chan_handle_t handle, i2s_event_data_t *event, void *user_ctx)
-{
-	//  ESP_LOGW(TAG, "sent done Detected");
-	return false; // Không yêu cầu xử lý thêm sau khi callback được gọi
-}
 void i2s_write(uint8_t pin, uint8_t val)
 {
 	SET_BIT_TO(i2s_port_data, pin, val);
@@ -37,7 +27,7 @@ uint8_t i2s_state(uint8_t pin)
 	return TEST(i2s_port_data, pin);
 }
 
-void i2s_push_sample()
+void inline i2s_push_sample()
 {
 	for (;;)
 	{
@@ -74,6 +64,16 @@ void i2s_push_sample()
 		i2s_channel_write(tx_chan, w_buf, DMA_BUFFER_LEN, &bytes_written, 1000);
 	}
 }
+static IRAM_ATTR bool i2s_tx_queue_overflow_callback(i2s_chan_handle_t handle, i2s_event_data_t *event, void *user_ctx)
+{
+	//  ESP_LOGW(TAG, "OVERFLOW Detected");
+	return false; // Không yêu cầu xử lý thêm sau khi callback được gọi
+}
+static IRAM_ATTR bool i2s_tx_sent_callback(i2s_chan_handle_t handle, i2s_event_data_t *event, void *user_ctx)
+{
+	// i2s_push_sample();
+	return false; // Không yêu cầu xử lý thêm sau khi callback được gọi
+}
 
 void load_buf(void *parameter)
 {
@@ -107,7 +107,7 @@ bool i2s_init(void)
 	.mclk_multiple = I2S_MCLK_MULTIPLE_128, \
 }
 	i2s_std_config_t tx_std_cfg = {
-		.clk_cfg = I2S_CLK_CONFIG(250000),
+		.clk_cfg = I2S_CLK_CONFIG(64000),
 		.slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
 		.gpio_cfg = {
 			.mclk = I2S_GPIO_UNUSED,
@@ -149,6 +149,7 @@ bool i2s_init(void)
 	}
 
 	// Kích hoạt kênh I2S
+//	vTaskDelay(pdMS_TO_TICKS(1000));
 	ESP_ERROR_CHECK(i2s_channel_enable(tx_chan));
 
 	DBGLN("\ni2s_init thành công");

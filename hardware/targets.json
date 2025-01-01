@@ -17,7 +17,7 @@
             "lua_name": "ESP32S3_LUA_TEST"
         },
         {
-            "name": "ESP32-S3[-Lite-GATEWAY",
+            "name": "ESP32-S3-Lite-GATEWAY",
             "version": "1.1.0",
             "part": "ESP32S3-2400-lite.json", 
             "platform": "esp32-s3",

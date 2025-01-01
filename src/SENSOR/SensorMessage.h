@@ -1,11 +1,14 @@
 #include "dataMessage.h"
 #include "PHSensor/PHSensor.h"
-#include "./Sensor_base.h"
+#include "Baro/baro_base.h"
+#include "CurrentSensor/INAMessage.h"
+#include "ArduinoJson.h"
 class MeasurementMessage : public DataMessageGeneric
 {
 public:
     PHSensorMessage phSensorMessage;
-    Sensor_base *baro;
+    BaroMessage baro;
+    INAmessage ina;
     void serialize(JsonObject &doc)
     {
         // Create a data object
@@ -35,28 +38,8 @@ public:
 
         // // Add the PH sensor data to the JSON object
         phSensorMessage.serialize(measurements);
-        if (baro != nullptr)
-        {
-            baro->serialize(measurements);
-        }else
-        {
-            /* code */
-            serializenullbaro(measurements);
-        }
-        
-    }
+        baro.serialize(measurements);   
+        ina.serialize(measurements);            
 
-private:
-    void serializenullbaro(JsonArray &doc)
-    {
-        // Thêm nhiệt độ vào JSON
-        JsonObject tempObj = doc.add<JsonObject>();
-        tempObj["measurement"] = static_cast<float>(-273)  ; // Nhiệt độ (°C)
-        tempObj["type"] = "BMP280_Temperature";                             // Loại cảm biến
-
-        // Thêm áp suất vào JSON
-        JsonObject pressureObj = doc.add<JsonObject>();
-        pressureObj["measurement"] = static_cast<float>(-1) ; // Áp suất (hPa)
-        pressureObj["type"] = "BMP280_Pressure";                                // Loại cảm biến
     }
 };

@@ -166,14 +166,3 @@ bool SPL06::detect()
     return chipid == SPL06_DEFAULT_CHIP_ID;
 }
 
-void SPL06::serialize(JsonArray& doc) {
-    // Thêm thông tin nhiệt độ vào JSON
-    JsonObject tempObj = doc.createNestedObject();
-    tempObj["measurement"] = static_cast<float>(m_temperatureLast) / 100.0; // Nhiệt độ (°C)
-    tempObj["type"] = "SPL06_Temperature";                                  // Loại dữ liệu nhiệt độ
-
-    // Thêm thông tin áp suất vào JSON
-    JsonObject pressureObj = doc.createNestedObject();
-    pressureObj["measurement"] = static_cast<float>(m_pressureLast) / 10.0; // Áp suất (hPa)
-    pressureObj["type"] = "SPL06_Pressure";                                 // Loại dữ liệu áp suất
-}

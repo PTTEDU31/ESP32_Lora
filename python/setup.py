@@ -2,12 +2,12 @@ import setuptools
 setuptools.setup(
     name="binary_configurator",
     version="3.4.0",
-    author="ExpressLRS Team",
+    author="LoraMesh Team",
     author_email="",
-    description="ExpressLRS Binary Installer",
-    long_description='ExpressLRS binary configurator and flasher tool all-in-one',
+    description="LoraMesh Binary Installer",
+    long_description='LoraMesh binary configurator and flasher tool all-in-one',
     long_description_content_type="text/markdown",
-    url="https://github.com/ExpressLRS/ExpressLRS",
+    url="https://github.com/LoraMesh/LoraMesh",
     packages=['.'] + setuptools.find_packages(),
     include_package_data=True,
     entry_points={

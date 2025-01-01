@@ -1,6 +1,6 @@
 /*==========================*/
 
-.elrs-header {
+.LoraMesh-header {
     padding: 3em 0 3em 0 ;
     background-color: #4686a0;
     color: rgba(255, 255, 255, 0.75);
@@ -347,7 +347,7 @@ body, input, select, textarea {
 	background: #88cef7;
   }
 
-    /* Custom code for ExpressLRS PWM Output table */
+    /* Custom code for LoraMesh PWM Output table */
   .pwmpnl {
 	min-width: fit-content;
   }
@@ -369,12 +369,12 @@ body, input, select, textarea {
 
   /*==========================*/
 
-  .elrs-inline-form {
+  .LoraMesh-inline-form {
 	  display: flex;
 	  align-items: center;
   }
 
-  .elrs-inline-form > * {
+  .LoraMesh-inline-form > * {
 	margin-right: 5px;
   }
 

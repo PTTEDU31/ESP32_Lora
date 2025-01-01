@@ -1,6 +1,7 @@
 #include "loraMeshService.h"
 #include "targets.h"
 #include "common.h"
+#include "logging.h"
 static const char *LMS_TAG = "LoRaMeshService";
 
 #if defined(NAYAD_V1) || defined(NAYAD_V1R2) || defined(T_BEAM_LORA_32) || defined(T_BEAM_V10) || defined(T_BEAM_V12)
@@ -48,7 +49,7 @@ bool LoRaMeshService::initLoraMesherService()
     {
 
         ESP_LOGW(LMS_TAG, "Failed to initialize LoRaMesher radio. Retrying...");
-            return 0;
+        return 0;
     }
 
     // Create the receive task and add it to the LoRaMesher
@@ -74,7 +75,7 @@ void LoRaMeshService::loopReceivedPackets()
 
         // Get the first element inside the Received User Packets FiFo
         AppPacket<LoRaMeshMessage> *packet = radio.getNextAppPacket<LoRaMeshMessage>();
-
+        DBGLN("Reciver Lora: %c",packet->payload->dataMessage);
         // Create a DataMessage from the received packet
         DataMessage *message = createDataMessage(packet);
 
@@ -190,7 +191,7 @@ String LoRaMeshService::getRoutingTable()
             NetworkNode node = routeNode->networkNode;
             String addr = String(node.address, HEX);
             addr.toUpperCase();
-            String via =String(routeNode->via,HEX);
+            String via = String(routeNode->via, HEX);
             via.toUpperCase();
 
             routingTable += addr + " (" + String(node.metric) + ") - Via: " + via + "\n";

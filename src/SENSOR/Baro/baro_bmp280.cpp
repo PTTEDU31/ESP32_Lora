@@ -105,14 +105,3 @@ bool BMP280::detect()
     return false;
 }
 
-void BMP280::serialize(JsonArray &doc) {
-    // Thêm nhiệt độ vào JSON
-    JsonObject tempObj = doc.add<JsonObject>();
-    tempObj["measurement"] = static_cast<float>(m_temperature) / 100.0; // Nhiệt độ (°C)
-    tempObj["type"] = "BMP280_Temperature";                             // Loại cảm biến
-
-    // Thêm áp suất vào JSON
-    JsonObject pressureObj = doc.add<JsonObject>();
-    pressureObj["measurement"] = static_cast<float>(m_pressureLast) / 10.0; // Áp suất (hPa)
-    pressureObj["type"] = "BMP280_Pressure";                                // Loại cảm biến
-}

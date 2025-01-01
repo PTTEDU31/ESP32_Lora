@@ -36,7 +36,7 @@ def get_git_version():
     return dict(version=ver, sha=sha[:6])
 
 
-class ElrsUploadResult:
+class LoraMeshUploadResult:
         # SUCCESS
         Success = 0
         # ERROR: Unspecified

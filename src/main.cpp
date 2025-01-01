@@ -10,6 +10,15 @@
 #if defined(PLATFORM_ESP32)
 #include "devScreen.h"
 #include "devETH.h"
+#include "led/led.h"
+
+Led &led = Led::getInstance();
+
+void initLed()
+{
+    led.init();
+}
+
 #endif
 // Manager
 #include "messageManager.h"
@@ -55,6 +64,8 @@ void initManager()
     ESP_LOGV(TAG, "MQTT service added to manager");
     manager.addMessageService(&sensorService);
     ESP_LOGV(TAG, "MQTT service added to manager");
+    manager.addMessageService(&led);
+    ESP_LOGV(TAG, "Led service added to manager");
 }
 
 #if defined(PLATFORM_ESP32_S3)
@@ -191,6 +202,7 @@ bool setupHardwareFromOptions()
             {&WIFI_device, 1}};
         devicesRegister(wifi_device, ARRAY_SIZE(wifi_device));
         devicesInit();
+
         return false;
     }
     return true;
@@ -221,17 +233,16 @@ void handleUartMessage()
         Serial.println(executedProgram);
     }
 }
-
 void setup()
 {
     if (setupHardwareFromOptions())
     {
+        bool init_success;
+        init_success = pwm.init_pwm();
         setupTarget();
         devicesRegister(devices, ARRAY_SIZE(devices));
         devicesInit();
         DBGLN("Initialised devices");
-        bool init_success;
-        init_success = pwm.init_pwm();
         // Initialize Manager
         initManager();
 
@@ -254,7 +265,8 @@ void setup()
     }
 
     devicesStart();
-    pwm.set_pwm(128, 30,4000);
+    initLed();
+    pwm.exWrite(135,1);
 }
 
 #include "WiFi.h"

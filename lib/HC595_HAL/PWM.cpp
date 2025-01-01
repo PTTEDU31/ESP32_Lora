@@ -23,18 +23,21 @@ bool EX_PWM::init_pwm()
     return i2s_init();
 }
 // Hàm thiết lập chu kỳ PWM (duty) cho chân cụ thể
-void EX_PWM::set_pwm_duty(int pin, int duty) {
-    if (pin > 127) {
+void EX_PWM::set_pwm_duty(int pin, int duty)
+{
+    if (pin > 127)
+    {
         const uint8_t pinlo = pin & 0x7F;
         pwm_pin_t &pindata = pwm_pin_data[pinlo];
-        
+
         // Tính toán số lượng ticks PWM dựa trên chu kỳ duty
         const uint32_t duty_ticks = (pindata.pwm_cycle_ticks * duty) / 255;
         pindata.pwm_duty_ticks = duty_ticks;
-        
+
         ESP_LOGI(TAG, "Set duty: pin: %d, duty: %d, pwm_duty_ticks: %d", pin, duty, duty_ticks);
     }
-    else {
+    else
+    {
         // Sử dụng LEDC driver để thiết lập duty cho PWM
         ledcWrite(pin, duty);
     }
@@ -61,4 +64,8 @@ void EX_PWM::set_pwm(int pin, int duty, uint32_t f)
 {
     EX_PWM::set_pwm_frequency(pin, f); // Thiết lập tần số PWM
     EX_PWM::set_pwm_duty(pin, duty);   // Thiết lập chu kỳ PWM (duty cycle)
+}
+void EX_PWM::exWrite(int pin, int val)
+{
+    (IS_I2S_EXPANDER_PIN(pin) ? i2s_write(I2S_EXPANDER_PIN_INDEX(pin), val) : digitalWrite(pin, val));
 }
