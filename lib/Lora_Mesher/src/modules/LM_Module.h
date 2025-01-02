@@ -4,13 +4,14 @@
 
 #include "BuildOptions.h"
 
-class LM_Module {
+class LM_Module
+{
 public:
     virtual ~LM_Module() {}
     virtual int16_t begin(float freq, float bw, uint8_t sf, uint8_t cr, uint8_t syncWord,
-        int8_t power, int16_t preambleLength) = 0;
+                          int8_t power, int16_t preambleLength) = 0;
 
-    virtual int16_t receive(uint8_t* data, size_t len) = 0;
+    virtual int16_t receive(uint8_t *data, size_t len) = 0;
     virtual int16_t startReceive() = 0;
     virtual int16_t scanChannel() = 0;
     virtual int16_t startChannelScan() = 0;
@@ -20,8 +21,8 @@ public:
     virtual size_t getPacketLength() = 0;
     virtual float getRSSI() = 0;
     virtual float getSNR() = 0;
-    virtual int16_t readData(uint8_t* buffer, size_t numBytes) = 0;
-    virtual int16_t transmit(uint8_t* buffer, size_t length) = 0;
+    virtual int16_t readData(uint8_t *buffer, size_t numBytes) = 0;
+    virtual int16_t transmit(uint8_t *buffer, size_t length) = 0;
     virtual uint32_t getTimeOnAir(size_t length) = 0;
 
     virtual void setDioActionForReceiving(void (*action)()) = 0;
@@ -39,4 +40,6 @@ public:
     virtual int16_t setPreambleLength(int16_t preambleLength) = 0;
     virtual int16_t setGain(uint8_t gain) = 0;
     virtual int16_t setOutputPower(int8_t power, int8_t useRfo) = 0;
+    void setRfSwitchPins(uint32_t rxEn,
+                         uint32_t txEn){}
 };

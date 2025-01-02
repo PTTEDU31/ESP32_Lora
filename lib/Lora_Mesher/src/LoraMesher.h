@@ -22,7 +22,7 @@
 #include "services/RoleService.h"
 
 #include "services/SimulatorService.h"
-
+#define LM_GOD_MODE
 /**
  * @brief LoRaMesher Library
  *

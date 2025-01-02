@@ -26,6 +26,7 @@ bool LoRaMeshService::initLoraMesherService()
     config.bw = 812.5F;
     config.cr = 7U;
     config.sf = 7U;
+
 #elif defined(RADIO_SX127X)
     config.module = LoraMesher::LoraModules::SX1276_MOD;
 #elif defined(RADIO_SX126X)
@@ -45,6 +46,8 @@ bool LoRaMeshService::initLoraMesherService()
 
     // Initialize LoRaMesher
     // radio.begin(config);
+    // radio.radio->getRSSI(GPIO_PIN_RX_ENABLE,GPIO_PIN_TX_ENABLE);
+    radio.radio->setRfSwitchPins(GPIO_PIN_RX_ENABLE,GPIO_PIN_TX_ENABLE);
     if (radio.begin(config) != 0)
     {
 

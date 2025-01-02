@@ -21,7 +21,9 @@ public:
 
   INAmessage read()
   {
+    if(isConnected())
     return INAmessage(getBusVoltage_mV(), getShuntVoltage_mV(), getCurrent_mA(), getPower_mW());
+    return INAmessage(-1,-1,-1,-1);
   }
   bool begin();
   bool isConnected();
