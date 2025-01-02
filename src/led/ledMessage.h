@@ -16,21 +16,23 @@ enum LedCommand : uint8_t
 class PWMCommandMessage : public DataMessageGeneric
 {
 public:
-    LedCommand  ledCommand; // Lệnh LED (On/Off)
+    LedCommand ledCommand; // Lệnh LED (On/Off)
+    uint8_t pin;
     uint8_t duty;          // Độ sáng (PWM duty cycle)
     uint32_t frequency;    // Tần số PWM
 
     // Hàm serialize: chuyển dữ liệu thành JSON
     void serialize(JsonObject &doc)
     {
-        // Gọi hàm serialize của lớp cha
-        DataMessageGeneric::serialize(doc);
 
         // Tạo đối tượng JSON lồng
         JsonObject dataObj = doc.createNestedObject("data");
+        // Gọi hàm serialize của lớp cha
+        ((DataMessageGeneric *)(this))->serialize(dataObj);
 
         // Thêm dữ liệu vào JSON
-        dataObj["ledCommand"] = static_cast<uint8_t>(ledCommand);
+        dataObj["ledCommand"] = ledCommand;
+        dataObj["pin"] = pin;
         dataObj["duty"] = duty;
         dataObj["frequency"] = frequency;
     }
@@ -39,16 +41,20 @@ public:
     void deserialize(JsonObject &doc)
     {
         // Gọi hàm deserialize của lớp cha
-        DataMessageGeneric::deserialize(doc);
+        ((DataMessageGeneric *)(this))->deserialize(doc);
 
-        // Lấy dữ liệu từ JSON
-        if (doc.containsKey("data"))
-        {
-            JsonObject dataObj = doc["data"];
-            ledCommand = static_cast<LedCommand>(dataObj["ledCommand"].as<uint8_t>());
-            duty = dataObj["duty"];
-            frequency = dataObj["frequency"];
-        }
+        // // Lấy dữ liệu từ JSON
+        // if (doc.containsKey("data"))
+        // {
+        //     JsonObject dataObj = doc["data"];
+        //     ledCommand = static_cast<LedCommand>(dataObj["ledCommand"].as<uint8_t>());
+        //     duty = dataObj["duty"];
+        //     frequency = dataObj["frequency"];
+        // }
+        ledCommand = doc["ledCommand"];
+        pin = doc["pin"];
+        duty = doc["duty"];
+        frequency = doc["frequency"];
     }
 };
 class LedMessage : public DataMessageGeneric
@@ -79,10 +85,10 @@ public:
         {
         case LedCommand::On:
         case LedCommand::Off:
+            ((DataMessageGeneric *)(this))->deserialize(doc);
             break;
         case LedCommand::Sendata:
         case LedCommand::reciver:
-            ((DataMessageGeneric *)(this))->deserialize(doc);
             break;
             // Add the derived class data to the JSON object
         }

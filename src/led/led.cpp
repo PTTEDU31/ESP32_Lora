@@ -12,7 +12,7 @@ String Led::ledOn()
 {
     WRITE(135, 1);
     ESP_LOGV(LED_TAG, "Led On");
-    Led::state = 1;
+    state = 1;
     return "Led On";
 }
 
@@ -34,7 +34,7 @@ String Led::ledOff()
 {
     WRITE(135, 0);
     ESP_LOGV(LED_TAG, "Led Off");
-    Led::state = 0;
+    state = 0;
     return "Led Off";
 }
 
@@ -55,7 +55,7 @@ void Led::sendstatus()
 {
     PWMCommandMessage *message = new PWMCommandMessage();
 
-    message->ledCommand = (LedCommand)Led::state;
+    message->ledCommand = (LedCommand)state;
     message->duty = 0;
     message->frequency = 0;
 
@@ -114,11 +114,11 @@ String Led::getJSON(DataMessage *message)
 
 DataMessage *Led::getDataMessage(JsonObject data)
 {
-    LedMessage *ledMessage = new LedMessage();
+    PWMCommandMessage *ledMessage = new PWMCommandMessage();
 
     ledMessage->deserialize(data);
 
-    ledMessage->messageSize = sizeof(LedMessage) - sizeof(DataMessageGeneric);
+    ledMessage->messageSize = sizeof(PWMCommandMessage) - sizeof(DataMessageGeneric);
 
     return ((DataMessage *)ledMessage);
 }
@@ -153,7 +153,7 @@ void Led::processReceivedMessage(messagePort port, DataMessage *message)
         ledOff();
         break;
     case LedCommand::Sendata:
-        DBGLN("Status : %d",Led::state);
+        DBGLN("Status : %d",state);
         sendstatus();
         break;
     default:
